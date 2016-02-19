@@ -6,15 +6,14 @@ import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-public class DetailActivity extends AppCompatActivity {
+public class ChatActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_detail);
+        setContentView(R.layout.activity_chat);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
@@ -30,7 +29,7 @@ public class DetailActivity extends AppCompatActivity {
 
         Bundle bundle=getIntent().getExtras();
         String Slecteditem=bundle.getString("SelectedActivity");
-        TextView textView = (TextView) findViewById(R.id.activity_name);
+        TextView textView = (TextView) findViewById(R.id.chat_activity_name);
         textView.setText(Slecteditem);
 
     }

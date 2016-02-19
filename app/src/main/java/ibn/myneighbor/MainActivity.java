@@ -1,5 +1,6 @@
 package ibn.myneighbor;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -12,11 +13,37 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.ArrayAdapter;
+import android.widget.AdapterView;
 import android.widget.ListView;
+import android.widget.Toast;
+import android.util.Log;
+import android.widget.ImageButton;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
+    private String[] mocActivityNeed = {
+            "Feeding Dog",
+            "Babysisting",
+            "Car Pool",
+            "Math Tutoring",
+            "Plants Waatering",
+            "Ubuntu","Windows7",
+            "Max OS X"
+    };
+
+    private Integer[] imgid={
+            R.drawable.animation,
+            R.drawable.bear,
+            R.drawable.dolphin,
+            R.drawable.human1,
+            R.drawable.human2,
+            R.drawable.octopus,
+            R.drawable.panda,
+            R.drawable.snowman,
+    };
+
+    private ListView listView;
+//    private ImageButton chat;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,10 +70,32 @@ public class MainActivity extends AppCompatActivity
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
-        String[] mocActivityNeed = {"Feeding Dog","Babysisting","Car Pool","Math Tutoring","Plants Waatering","Ubuntu","Windows7", "Max OS X"};
-        ArrayAdapter<String> itemsAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, mocActivityNeed);
-        ListView listView = (ListView) findViewById(R.id.activity_need);
-        listView.setAdapter(itemsAdapter);
+
+        CustomListAdapter adapter = new CustomListAdapter(this, mocActivityNeed, imgid);
+        listView = (ListView) findViewById(R.id.activity_need);
+        listView.setAdapter(adapter);
+
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View v, int position, long id) {
+                String SelectedActivity = mocActivityNeed[+position];
+//                Toast.makeText(getApplicationContext(), SlectedActivity, Toast.LENGTH_SHORT).show();
+                Intent detailActivity = new Intent(v.getContext(), DetailActivity.class);
+                detailActivity.putExtra("SelectedActivity", SelectedActivity);
+                startActivity(detailActivity);
+            }
+
+        });
+
+    }
+
+    public void onClickChat(View v){
+//        final int position = (Integer) v.getTag();
+//        Toast.makeText(v.getContext(), position, Toast.LENGTH_SHORT).show();
+//        Log.d("Ibn", v.getTag() + " " + v.getParent());
+        Intent chatActivity = new Intent(v.getContext(), ChatActivity.class);
+        chatActivity.putExtra("SelectedActivity", v.getTag().toString());
+        startActivity(chatActivity);
     }
 
     @Override
