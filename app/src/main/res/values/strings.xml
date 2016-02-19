@@ -7,4 +7,8 @@
     <string name="action_settings">Settings</string>
     <string name="title_activity_detail">DetailActivity</string>
     <string name="title_activity_chat">ChatActivity</string>
+    <string name="title_activity_create_new">CreateNewActivity</string>
+    <string name="title_activity_create_new_group">CreateNewGroupActivity</string>
+    <string name="group">Who can see:</string>
+    <string name="expire">Expire in</string>
 </resources>

@@ -36,6 +36,24 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="ibn.myneighbor.MainActivity" />
         </activity>
+        <activity
+            android:name=".CreateNewActivity"
+            android:label="@string/title_activity_create_new"
+            android:parentActivityName=".MainActivity"
+            android:theme="@style/AppTheme.NoActionBar" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="ibn.myneighbor.MainActivity" />
+        </activity>
+        <activity
+            android:name=".CreateNewGroupActivity"
+            android:label="@string/title_activity_create_new_group"
+            android:parentActivityName=".MainActivity"
+            android:theme="@style/AppTheme.NoActionBar" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="ibn.myneighbor.MainActivity" />
+        </activity>
     </application>
 
 </manifest>

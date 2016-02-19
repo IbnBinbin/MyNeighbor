@@ -56,8 +56,8 @@ public class MainActivity extends AppCompatActivity
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
+                Intent createNewActivity = new Intent(view.getContext(), CreateNewActivity.class);
+                startActivity(createNewActivity);
             }
         });
 
@@ -77,10 +77,10 @@ public class MainActivity extends AppCompatActivity
 
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
-            public void onItemClick(AdapterView<?> parent, View v, int position, long id) {
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 String SelectedActivity = mocActivityNeed[+position];
 //                Toast.makeText(getApplicationContext(), SlectedActivity, Toast.LENGTH_SHORT).show();
-                Intent detailActivity = new Intent(v.getContext(), DetailActivity.class);
+                Intent detailActivity = new Intent(view.getContext(), DetailActivity.class);
                 detailActivity.putExtra("SelectedActivity", SelectedActivity);
                 startActivity(detailActivity);
             }
@@ -89,12 +89,12 @@ public class MainActivity extends AppCompatActivity
 
     }
 
-    public void onClickChat(View v){
+    public void onClickChat(View view){
 //        final int position = (Integer) v.getTag();
 //        Toast.makeText(v.getContext(), position, Toast.LENGTH_SHORT).show();
 //        Log.d("Ibn", v.getTag() + " " + v.getParent());
-        Intent chatActivity = new Intent(v.getContext(), ChatActivity.class);
-        chatActivity.putExtra("SelectedActivity", v.getTag().toString());
+        Intent chatActivity = new Intent(view.getContext(), ChatActivity.class);
+        chatActivity.putExtra("SelectedActivity", view.getTag().toString());
         startActivity(chatActivity);
     }
 
@@ -136,13 +136,11 @@ public class MainActivity extends AppCompatActivity
         // Handle navigation view item clicks here.
         int id = item.getItemId();
 
-        if (id == R.id.nav_camara) {
-            // Handle the camera action
-        } else if (id == R.id.nav_gallery) {
+        if (id == R.id.profile) {
 
-        } else if (id == R.id.nav_slideshow) {
+        } else if (id == R.id.neighborhood) {
 
-        } else if (id == R.id.nav_manage) {
+        } else if (id == R.id.conversions) {
 
         } else if (id == R.id.nav_share) {
 
