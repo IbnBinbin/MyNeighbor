@@ -4,6 +4,8 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentTransaction;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -12,12 +14,12 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
+import android.view.SubMenu;
 import android.view.MenuItem;
 import android.widget.AdapterView;
 import android.widget.ListView;
-import android.widget.Toast;
+import android.widget.ArrayAdapter;
 import android.util.Log;
-import android.widget.ImageButton;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
@@ -42,7 +44,30 @@ public class MainActivity extends AppCompatActivity
             R.drawable.snowman,
     };
 
+    private String[] group = {
+            "home",
+            "school",
+            "gym",
+            "internship",
+            "company",
+            "friends",
+            "love"
+    };
+
+    private String[] subgroup__mocActivityNeed = {
+            "Feeding Dog",
+            "Car Pool",
+            "Math Tutoring",
+    };
+
+    private Integer[] subgroup_imgid={
+            R.drawable.animation,
+            R.drawable.dolphin,
+            R.drawable.human2,
+    };
+
     private ListView listView;
+    private ListView groupListView;
 //    private ImageButton chat;
 
     @Override
@@ -72,6 +97,7 @@ public class MainActivity extends AppCompatActivity
 
 
         CustomListAdapter adapter = new CustomListAdapter(this, mocActivityNeed, imgid);
+        adapter.notifyDataSetChanged();
         listView = (ListView) findViewById(R.id.activity_need);
         listView.setAdapter(adapter);
 
@@ -86,6 +112,17 @@ public class MainActivity extends AppCompatActivity
             }
 
         });
+
+        NavigationView navView = (NavigationView) findViewById(R.id.nav_view);
+        Menu m = navView.getMenu();
+        SubMenu subGroup = m.addSubMenu("Groups");
+        subGroup.add(0,0,0,"All");
+        for(int i = 0;i<group.length;i++){
+            subGroup.add(0,i+1,i+1,group[i]); //group_id, item_id, order
+        }
+
+
+
 
     }
 
@@ -112,6 +149,7 @@ public class MainActivity extends AppCompatActivity
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.main, menu);
+
         return true;
     }
 
@@ -135,21 +173,58 @@ public class MainActivity extends AppCompatActivity
     public boolean onNavigationItemSelected(MenuItem item) {
         // Handle navigation view item clicks here.
         int id = item.getItemId();
+        Intent nextActivity = null;
+//        View v = new View(getApplication());
 
         if (id == R.id.profile) {
+            nextActivity = new Intent(MainActivity.this, ProfileActivity.class);
 
         } else if (id == R.id.neighborhood) {
+            nextActivity = new Intent(MainActivity.this, NeighborhoodActivity.class);
 
         } else if (id == R.id.conversions) {
+            nextActivity = new Intent(MainActivity.this, AllChatActivity.class);
+        } else if (id == 0){
+            CustomListAdapter adapter = new CustomListAdapter(this, mocActivityNeed, imgid);
+            adapter.notifyDataSetChanged();
+            listView = (ListView) findViewById(R.id.activity_need);
+            listView.setAdapter(adapter);
+            listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                @Override
+                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                    String SelectedActivity = mocActivityNeed[+position];
+//                Toast.makeText(getApplicationContext(), SlectedActivity, Toast.LENGTH_SHORT).show();
+                    Intent detailActivity = new Intent(view.getContext(), DetailActivity.class);
+                    detailActivity.putExtra("SelectedActivity", SelectedActivity);
+                    startActivity(detailActivity);
+                }
 
-        } else if (id == R.id.nav_share) {
+            });
+        }else{
+                CustomListAdapter adapter = new CustomListAdapter(this, subgroup__mocActivityNeed, subgroup_imgid);
+                adapter.notifyDataSetChanged();
+                listView = (ListView) findViewById(R.id.activity_need);
+                listView.setAdapter(adapter);
+                listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                    @Override
+                    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                        String SelectedActivity = subgroup__mocActivityNeed[+position];
+    //                Toast.makeText(getApplicationContext(), SlectedActivity, Toast.LENGTH_SHORT).show();
+                        Intent detailActivity = new Intent(view.getContext(), DetailActivity.class);
+                        detailActivity.putExtra("SelectedActivity", SelectedActivity);
+                        startActivity(detailActivity);
+                    }
 
-        } else if (id == R.id.nav_send) {
+                });
 
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
+        if(nextActivity!=null) {
+            startActivity(nextActivity);
+        }
+
         return true;
     }
 }
