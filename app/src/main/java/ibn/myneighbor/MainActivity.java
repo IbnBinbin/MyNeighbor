@@ -67,7 +67,8 @@ public class MainActivity extends AppCompatActivity
     };
 
     private ListView listView;
-    private ListView groupListView;
+    private String SelectedActivity;
+    private int tmp_subgroupActivity =-1;
 //    private ImageButton chat;
 
     @Override
@@ -101,10 +102,15 @@ public class MainActivity extends AppCompatActivity
         listView = (ListView) findViewById(R.id.activity_need);
         listView.setAdapter(adapter);
 
+
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                String SelectedActivity = mocActivityNeed[+position];
+                if(tmp_subgroupActivity==0||tmp_subgroupActivity==-1){
+                    SelectedActivity = mocActivityNeed[+position];
+                }else{
+                    SelectedActivity = subgroup__mocActivityNeed[+position];
+                }
 //                Toast.makeText(getApplicationContext(), SlectedActivity, Toast.LENGTH_SHORT).show();
                 Intent detailActivity = new Intent(view.getContext(), DetailActivity.class);
                 detailActivity.putExtra("SelectedActivity", SelectedActivity);
@@ -189,33 +195,13 @@ public class MainActivity extends AppCompatActivity
             adapter.notifyDataSetChanged();
             listView = (ListView) findViewById(R.id.activity_need);
             listView.setAdapter(adapter);
-            listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-                @Override
-                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                    String SelectedActivity = mocActivityNeed[+position];
-//                Toast.makeText(getApplicationContext(), SlectedActivity, Toast.LENGTH_SHORT).show();
-                    Intent detailActivity = new Intent(view.getContext(), DetailActivity.class);
-                    detailActivity.putExtra("SelectedActivity", SelectedActivity);
-                    startActivity(detailActivity);
-                }
-
-            });
+            tmp_subgroupActivity=0;
         }else{
                 CustomListAdapter adapter = new CustomListAdapter(this, subgroup__mocActivityNeed, subgroup_imgid);
                 adapter.notifyDataSetChanged();
                 listView = (ListView) findViewById(R.id.activity_need);
                 listView.setAdapter(adapter);
-                listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-                    @Override
-                    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                        String SelectedActivity = subgroup__mocActivityNeed[+position];
-    //                Toast.makeText(getApplicationContext(), SlectedActivity, Toast.LENGTH_SHORT).show();
-                        Intent detailActivity = new Intent(view.getContext(), DetailActivity.class);
-                        detailActivity.putExtra("SelectedActivity", SelectedActivity);
-                        startActivity(detailActivity);
-                    }
-
-                });
+                tmp_subgroupActivity=id;
 
         }
 
