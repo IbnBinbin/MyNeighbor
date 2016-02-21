@@ -10,7 +10,7 @@
     <string name="title_activity_create_new">Create New Activity</string>
     <string name="title_activity_create_new_group">Create New Group</string>
     <string name="group">Who can see:</string>
-    <string name="expire">Expire in</string>
+    <string name="expire">Expire at</string>
     <string name="title_activity_profile">My Profile</string>
     <string name="title_activity_neighborhood">My Neighborhood</string>
     <string name="title_activity_all_chat">My Conversations</string>

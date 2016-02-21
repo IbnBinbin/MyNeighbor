@@ -33,7 +33,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:inputType="textPersonName"
-            android:text="title..."
+            android:text=""
             android:ems="10"
             android:id="@+id/titleText"
             android:layout_gravity="center_horizontal" />
@@ -52,7 +52,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:inputType="textPersonName"
-            android:text="description..."
+            android:text=""
             android:id="@+id/descText"
             android:layout_gravity="center_horizontal" />
 
@@ -94,13 +94,32 @@
                 android:layout_height="wrap_content"
                 android:textAppearance="?android:attr/textAppearanceLarge"
                 android:text="@string/expire"
-                android:id="@+id/expire" />
+                android:id="@+id/expire"/>
 
-            <Spinner
-                android:layout_width="match_parent"
+            <EditText
+                android:id="@+id/editText"
+                android:layout_width="200dp"
                 android:layout_height="wrap_content"
-                android:id="@+id/spinnerExpire"
-                android:layout_gravity="right" />
+                android:editable="false" >
+            </EditText>
+
+            <ImageButton
+                android:id="@+id/imageButton1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:contentDescription="selectdate"
+                android:src="@android:drawable/ic_menu_my_calendar" />
+            <!--<CalendarView-->
+                <!--android:layout_width="match_parent"-->
+                <!--android:layout_height="match_parent"-->
+                <!--android:id="@+id/expireDate" />-->
+
+            <!--<Spinner-->
+                <!--android:layout_width="match_parent"-->
+                <!--android:layout_height="wrap_content"-->
+                <!--android:id="@+id/spinnerExpire"-->
+                <!--android:layout_gravity="right" />-->
+
 
 
         </LinearLayout>
@@ -112,12 +131,15 @@
             android:layout_gravity="center_horizontal">
             <Button
                 android:id="@+id/cancelButton"
+                android:text="Cancel"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_weight="1">
             </Button>
+
             <Button
                 android:id="@+id/saveButton"
+                android:text="Save"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_weight="1">

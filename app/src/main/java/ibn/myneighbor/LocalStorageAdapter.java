@@ -6,6 +6,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -13,6 +14,9 @@ import java.util.List;
 import java.util.Locale;
 
 import ibn.myneighbor.Model.Activity;
+import org.joda.time.LocalTime;
+import android.util.Log;
+import java.text.SimpleDateFormat;
 
 /**
  * Created by ttnok on 21/2/2559.
@@ -27,13 +31,13 @@ public class LocalStorageAdapter extends SQLiteOpenHelper {
     private static final int DATABASE_VERSION = 1;
 
     // Database Name
-    private static final String DATABASE_NAME = "my_neighbor";
+    private static final String DATABASE_NAME = "myneighbor";
 
     // Table Names
     private static final String TABLE_CONVERSATION = "conversation";
     private static final String TABLE_USER = "user";
-    private static final String TABLE_ACTIVITY = "sctivity";
-    private static final String TABLE_GROUP = "group";
+    private static final String TABLE_ACTIVITY = "activity";
+    private static final String TABLE_GROUP = "privategroup";
     private static final String TABLE_NEIGHBORHOOD = "neighborhood";
 
     // Column names
@@ -66,28 +70,28 @@ public class LocalStorageAdapter extends SQLiteOpenHelper {
     // Conversation table create statement
     private static final String CREATE_TABLE_CONVERSATION = "CREATE TABLE " + TABLE_CONVERSATION
             + "(" + KEY_ID + " INTEGER PRIMARY KEY AUTOINCREMENT," + KEY_TOPIC + " TEXT," + KEY_OWNER + " TEXT,"
-            + KEY_CLIENT + " TEXT," + KEY_CREATED_AT + " DATETIME," + KEY_CHAT_MESSAGE + " TEXT" +  ")";
+            + KEY_CLIENT + " TEXT," + KEY_CREATED_AT + " DATETIME," + KEY_CHAT_MESSAGE + " TEXT" + ")";
     // User table create statement
     private static final String CREATE_TABLE_USER = "CREATE TABLE "
-            + TABLE_USER + "(" + KEY_ID + " INTEGER PRIMARY KEY AUTOINCREMENT,"+ KEY_USERNAME + " TEXT PRIMARY KEY," + KEY_BIO
+            + TABLE_USER + "(" + KEY_ID + " INTEGER PRIMARY KEY AUTOINCREMENT," + KEY_USERNAME + " TEXT," + KEY_BIO
             + " TEXT," + KEY_PROFILE_PIC_ID + " INTEGER," + KEY_PASSWORD + " TEXT," + KEY_CREATED_AT + " DATETIME,"
             + KEY_UPDATED_AT + " DATETIME" + ")";
 
     // Activity table create statement
     private static final String CREATE_TABLE_ACTIVITY = "CREATE TABLE " + TABLE_ACTIVITY
-            + "(" + KEY_ID + " INTEGER PRIMARY KEY AUTOINCREMENT," + KEY_TITLE + " TEXT,"+ KEY_DESCRIPTION + " TEXT,"
-            + KEY_REQUEST_OR_OFFER + " INTEGER," + KEY_GROUP_NAME+ " INTEGER," + KEY_EXPIRT_DATE + " DATETIME,"
+            + "(" + KEY_ID + " INTEGER PRIMARY KEY AUTOINCREMENT," + KEY_TITLE + " TEXT," + KEY_DESCRIPTION + " TEXT,"
+            + KEY_REQUEST_OR_OFFER + " INTEGER," + KEY_GROUP_NAME + " INTEGER," + KEY_EXPIRT_DATE + " DATETIME,"
             + KEY_CREATED_AT + " DATETIME," + KEY_UPDATED_AT + " DATETIME," + KEY_OWNER + " TEXT" + ")";
 
     // Group table create statement
     private static final String CREATE_TABLE_GROUP = "CREATE TABLE " + TABLE_GROUP
             + "(" + KEY_ID + " INTEGER PRIMARY KEY AUTOINCREMENT," + KEY_OWNER + " TEXT,"
-            + KEY_GROUP_NAME + " TEXT," + KEY_MEMBER + " TEXT" +  ")";
+            + KEY_GROUP_NAME + " TEXT," + KEY_MEMBER + " TEXT" + ")";
 
     // Activity table create statement
     private static final String CREATE_TABLE_NEIGHBORHOOR = "CREATE TABLE " + TABLE_NEIGHBORHOOD
-            + "(" + KEY_ID + " INTEGER PRIMARY KEY AUTOINCREMENT," + KEY_INITIAL_POINT + " TEXT,"+ KEY_FINAL_POINT+ " TEXT,"
-            + KEY_DRAW_TYPE + " INTEGER," + KEY_OWNER+ " TEXT"  + ")";
+            + "(" + KEY_ID + " INTEGER PRIMARY KEY AUTOINCREMENT," + KEY_INITIAL_POINT + " TEXT," + KEY_FINAL_POINT + " TEXT,"
+            + KEY_DRAW_TYPE + " INTEGER," + KEY_OWNER + " TEXT" + ")";
 
 
     public LocalStorageAdapter(Context context) {
@@ -117,7 +121,7 @@ public class LocalStorageAdapter extends SQLiteOpenHelper {
         onCreate(db);
     }
 
-    public void deleteAllData(){
+    public void deleteAllData() {
         SQLiteDatabase db = this.getWritableDatabase();
         db.delete(TABLE_CONVERSATION, null, null);
         db.delete(TABLE_USER, null, null);
@@ -141,7 +145,7 @@ public class LocalStorageAdapter extends SQLiteOpenHelper {
         return check;
     }
 
-//    public long createActivity(String title, String desc, int req_offer, String groupName, Date expire, String owner) {
+    //    public long createActivity(String title, String desc, int req_offer, String groupName, Date expire, String owner) {
     public long createActivity(Activity a) {
 
         SQLiteDatabase db = this.getWritableDatabase();
@@ -184,7 +188,7 @@ public class LocalStorageAdapter extends SQLiteOpenHelper {
         return check;
     }
 
-    public int updateActivity(int id, String title, String desc, int req_offer, String groupName, Date expire, String owner){
+    public int updateActivity(int id, String title, String desc, int req_offer, String groupName, Date expire, String owner) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues values = new ContentValues();
         values.put(KEY_TITLE, title);
@@ -195,10 +199,10 @@ public class LocalStorageAdapter extends SQLiteOpenHelper {
         values.put(KEY_UPDATED_AT, getDateTime());
         values.put(KEY_OWNER, owner);
 //        Log.d("Nok", "update task: "+values.valueSet());
-        return db.update(TABLE_ACTIVITY, values, KEY_ID + "=?", new String[] {String.valueOf(id)});
+        return db.update(TABLE_ACTIVITY, values, KEY_ID + "=?", new String[]{String.valueOf(id)});
     }
 
-    public int updateUser(int id, String userName, String bio, int profilePic, String password){
+    public int updateUser(int id, String userName, String bio, int profilePic, String password) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues values = new ContentValues();
         values.put(KEY_USERNAME, userName);
@@ -210,9 +214,26 @@ public class LocalStorageAdapter extends SQLiteOpenHelper {
         return db.update(TABLE_USER, values, KEY_ID + "=?", new String[]{String.valueOf(id)});
     }
 
-    public ArrayList<Activity> getActivity(String group){
-        ArrayList<Activity> listActivity=null;
-        //TODO...
+    public ArrayList<Activity> getActivity(String group) throws ParseException {
+        ArrayList<Activity> listActivity = new ArrayList<Activity>();
+        String selectQuery = "SELECT * FROM " + TABLE_ACTIVITY + " WHERE "
+                + KEY_GROUP_NAME + " = '" + group+"'";
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor c = db.rawQuery(selectQuery, null);
+        if (c.moveToFirst()) {
+            do {
+                SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+//                Log.d("Ibn", c.getString(c.getColumnIndex(KEY_TITLE)));
+//                Log.d("Ibn", c.getString(c.getColumnIndex(KEY_DESCRIPTION)));
+//                Log.d("Ibn", c.getString(c.getColumnIndex(KEY_REQUEST_OR_OFFER)));
+//                Log.d("Ibn", c.getString(c.getColumnIndex(KEY_GROUP_NAME)));
+//                Log.d("Ibn", c.getString(c.getColumnIndex(KEY_EXPIRT_DATE)));
+//                Log.d("Ibn", c.getString(c.getColumnIndex(KEY_OWNER)));
+                String tmp_date =c.getString(c.getColumnIndex(KEY_EXPIRT_DATE));
+                Date d =formatter.parse(tmp_date);
+                listActivity.add(new Activity(c.getString(c.getColumnIndex(KEY_TITLE)), c.getString(c.getColumnIndex(KEY_DESCRIPTION)), c.getInt(c.getColumnIndex(KEY_REQUEST_OR_OFFER)), c.getString(c.getColumnIndex(KEY_GROUP_NAME)), d, c.getString(c.getColumnIndex(KEY_OWNER))));
+            } while (c.moveToNext());
+        }
 //        Activity a = new Activity()
         return listActivity;
     }
@@ -245,13 +266,14 @@ public class LocalStorageAdapter extends SQLiteOpenHelper {
 
     /**
      * get datetime
-     * */
+     */
     private String getDateTime() {
         SimpleDateFormat dateFormat = new SimpleDateFormat(
                 "yyyy-MM-dd HH:mm:ss", Locale.getDefault());
         Date date = new Date();
         return dateFormat.format(date);
     }
+
     private String getDateTime(Date date) {
         SimpleDateFormat dateFormat = new SimpleDateFormat(
                 "yyyy-MM-dd HH:mm:ss", Locale.getDefault());

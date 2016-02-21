@@ -1,5 +1,7 @@
 package ibn.myneighbor.Model;
 
+import org.joda.time.LocalTime;
+
 import java.util.Date;
 
 /**
@@ -15,6 +17,10 @@ public class Activity {
     private Date created_date;
     private Date updated_date;
     private String owner;
+
+    public Activity(){
+
+    }
 
     public Activity (String title, String desc, int req_offer, String groupName, Date expireDate, String owner){
         this.title=title;

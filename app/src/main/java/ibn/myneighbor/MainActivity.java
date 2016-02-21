@@ -6,6 +6,7 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -20,23 +21,35 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.ArrayAdapter;
 import android.util.Log;
+
+import org.joda.time.LocalTime;
+
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 
 import ibn.myneighbor.Model.Activity;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
-    private String[] mocActivityNeed = {
-            "Feeding Dog",
-            "Babysisting",
-            "Car Pool",
-            "Math Tutoring",
-            "Plants Waatering",
-            "Ubuntu","Windows7",
-            "Max OS X"
-    };
 
-    private Integer[] imgid={
+    private ArrayList<String> activityNeed = new ArrayList<String>();
+    private String activityNeed_s[];
+    private ArrayList<String> subgroup_activityNeed = new ArrayList<String>();
+    private String subgroup_activityNeed_s[];
+
+//    private String[] mocActivityNeed = {
+//            "Feeding Dog",
+//            "Babysisting",
+//            "Car Pool",
+//            "Math Tutoring",
+//            "Plants Waatering",
+//            "Ubuntu", "Windows7",
+//            "Max OS X"
+//    };
+
+    private Integer[] imgid = {
             R.drawable.animation,
             R.drawable.bear,
             R.drawable.dolphin,
@@ -63,7 +76,7 @@ public class MainActivity extends AppCompatActivity
             "Math Tutoring",
     };
 
-    private Integer[] subgroup_imgid={
+    private Integer[] subgroup_imgid = {
             R.drawable.animation,
             R.drawable.dolphin,
             R.drawable.human2,
@@ -71,19 +84,35 @@ public class MainActivity extends AppCompatActivity
 
     private ListView listView;
     private String selectedActivity;
-    private int tmp_subgroupActivity =-1;
+    private int tmp_subgroupActivity = -1;
+    public LocalStorageAdapter db;
 //    private ImageButton chat;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        LocalStorageAdapter db = new LocalStorageAdapter(getApplicationContext());
-        db.createActivity(new Activity("Feeding Dog", "dog dog dog", 0, "all", new Date(), "Ibn"));
-        db.createActivity(new Activity("Babysisting", "baby baby baby", 0, "all", new Date(), "Pop"));
-        db.createActivity(new Activity("Car Pool", "carrrrr", 1, "all", new Date(), "Egg"));
-        db.createActivity(new Activity("Math Tutoring", "12345", 0, "all", new Date(), "Touch"));
-        db.createActivity(new Activity("Plants Waatering", "waterr", 0, "all", new Date(), "Pim"));
-        db.createActivity(new Activity("Ubuntu", "!!??!", 1, "all", new Date(), "Ibn"));
-        db.createActivity(new Activity("Dating", "~~~", 0, "all", new Date(), "Ibn"));
+        db = new LocalStorageAdapter(this.getApplicationContext());
+//        db.deleteAllData();
+//        Date d = formatter.parse(new Date());
+//        db.createActivity(new Activity("Feeding Dog", "dog dog dog", 0, "all", new Date(), "Ibn"));
+//        db.createActivity(new Activity("Babysisting", "baby baby baby", 0, "home", new Date(), "Pop"));
+//        db.createActivity(new Activity("Car Pool", "carrrrr", 1, "all", new Date(), "Egg"));
+//        db.createActivity(new Activity("Math Tutoring", "12345", 0, "home", new Date(), "Touch"));
+//        db.createActivity(new Activity("Plants Waatering", "waterr", 0, "all", new Date(), "Pim"));
+//        db.createActivity(new Activity("Ubuntu", "!!??!", 1, "all", new Date(), "Ibn"));
+//        db.createActivity(new Activity("Dating", "~~~", 0, "all", new Date(), "Ibn"));
+
+        ArrayList<Activity> act = new ArrayList<Activity>();
+        try {
+            act.addAll(db.getActivity("all"));
+        } catch (ParseException e) {
+            e.printStackTrace();
+            Log.d("Ibn", "error");
+        }
+        db.closeDB();
+
+        for (int i = 0; i < act.size(); i++) {
+            activityNeed.add(act.get(i).getTitle());
+        }
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
@@ -108,8 +137,10 @@ public class MainActivity extends AppCompatActivity
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
+        activityNeed_s = new String[activityNeed.size()];
+        activityNeed_s = activityNeed.toArray(activityNeed_s);
 
-        CustomListAdapter adapter = new CustomListAdapter(this, mocActivityNeed, imgid);
+        CustomListAdapter adapter = new CustomListAdapter(this, activityNeed_s, imgid);
         adapter.notifyDataSetChanged();
         listView = (ListView) findViewById(R.id.activity_need);
         listView.setAdapter(adapter);
@@ -118,11 +149,11 @@ public class MainActivity extends AppCompatActivity
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                if(tmp_subgroupActivity==0||tmp_subgroupActivity==-1){
-                    selectedActivity = mocActivityNeed[+position];
-                }else{
-                    selectedActivity = subgroup__mocActivityNeed[+position];
-                }
+//                if (tmp_subgroupActivity == 0 || tmp_subgroupActivity == -1) {
+                    selectedActivity = activityNeed_s[+position];
+//                } else {
+//                    selectedActivity = subgroup__mocActivityNeed[+position];
+//                }
 //                Toast.makeText(getApplicationContext(), SlectedActivity, Toast.LENGTH_SHORT).show();
                 Intent detailActivity = new Intent(view.getContext(), DetailActivity.class);
                 detailActivity.putExtra("SelectedActivity", selectedActivity);
@@ -134,17 +165,15 @@ public class MainActivity extends AppCompatActivity
         NavigationView navView = (NavigationView) findViewById(R.id.nav_view);
         Menu m = navView.getMenu();
         SubMenu subGroup = m.addSubMenu("Groups");
-        subGroup.add(0,0,0,"All");
-        for(int i = 0;i<group.length;i++){
-            subGroup.add(0,i+1,i+1,group[i]); //group_id, item_id, order
+        subGroup.add(0, 0, 0, "All");
+        for (int i = 0; i < group.length; i++) {
+            subGroup.add(0, i + 1, i + 1, group[i]); //group_id, item_id, order
         }
-
-
 
 
     }
 
-    public void onClickChat(View view){
+    public void onClickChat(View view) {
 //        final int position = (Integer) v.getTag();
 //        Toast.makeText(v.getContext(), position, Toast.LENGTH_SHORT).show();
 //        Log.d("Ibn", v.getTag() + " " + v.getParent());
@@ -202,27 +231,48 @@ public class MainActivity extends AppCompatActivity
 
         } else if (id == R.id.conversions) {
             nextActivity = new Intent(MainActivity.this, AllChatActivity.class);
-        } else if (id == 0){
-            CustomListAdapter adapter = new CustomListAdapter(this, mocActivityNeed, imgid);
+        } else if (id == 0) {
+            CustomListAdapter adapter = new CustomListAdapter(this, activityNeed_s, imgid);
             adapter.notifyDataSetChanged();
             listView = (ListView) findViewById(R.id.activity_need);
             listView.setAdapter(adapter);
-            tmp_subgroupActivity=0;
-        }else{
-                CustomListAdapter adapter = new CustomListAdapter(this, subgroup__mocActivityNeed, subgroup_imgid);
-                adapter.notifyDataSetChanged();
-                listView = (ListView) findViewById(R.id.activity_need);
-                listView.setAdapter(adapter);
-                tmp_subgroupActivity=id;
+            tmp_subgroupActivity = 0;
+        } else {
+            ArrayList<Activity> act = new ArrayList<Activity>();
+            activityNeed.clear();
+            try {
+                act.addAll(db.getActivity("home"));
+            } catch (ParseException e) {
+                e.printStackTrace();
+                Log.d("Ibn", "error");
+            }
+            db.closeDB();
+
+            for (int i = 0; i < act.size(); i++) {
+                activityNeed.add(act.get(i).getTitle());
+            }
+
+            activityNeed_s = new String[activityNeed.size()];
+            activityNeed_s = activityNeed.toArray(activityNeed_s);
+
+            CustomListAdapter adapter = new CustomListAdapter(this, activityNeed_s, imgid);
+            adapter.notifyDataSetChanged();
+            listView = (ListView) findViewById(R.id.activity_need);
+            listView.setAdapter(adapter);
+
+            tmp_subgroupActivity = id;
+
 
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
-        if(nextActivity!=null) {
+        if (nextActivity != null) {
             startActivity(nextActivity);
         }
 
         return true;
     }
+
+
 }
