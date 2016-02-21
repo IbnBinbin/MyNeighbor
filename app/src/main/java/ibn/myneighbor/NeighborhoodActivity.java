@@ -17,12 +17,15 @@ import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.ImageButton;
+import android.widget.Button;
 import android.graphics.Color;
+import android.widget.Toast;
 
 public class NeighborhoodActivity extends FragmentActivity implements OnMapReadyCallback {
 
     private GoogleMap mMap;
     private int drawOption;
+    private int clickedinitial;
     private LatLng firstClick;
 
     @Override
@@ -62,6 +65,27 @@ public class NeighborhoodActivity extends FragmentActivity implements OnMapReady
             }
         });
 
+        Button cancel = (Button) findViewById(R.id.cancelButton);
+        cancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent createNewActivity = new Intent(view.getContext(),MainActivity.class);
+                startActivity(createNewActivity);
+            }
+        });
+
+        Button save = (Button) findViewById(R.id.saveButton);
+        save.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent createNewActivity = new Intent(view.getContext(),MainActivity.class);
+                startActivity(createNewActivity);
+                //Todo save data
+            }
+        });
+
+
+
     }
 
 
@@ -84,18 +108,25 @@ public class NeighborhoodActivity extends FragmentActivity implements OnMapReady
         LatLng glasgow = new LatLng(55.8580, -4.2590);
 //        mMap.addMarker(new MarkerOptions().position(glasgow).title("Glasgow"));
 //        mMap.moveCamera(CameraUpdateFactory.newLatLng(glasgow));
-        mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(glasgow, 12.0f));
+        mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(glasgow, 15.0f));
+
+//        float zoom = mMap.getCameraPosition().zoom;
 
         mMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
             @Override
             public void onMapClick(LatLng latLng) {
-                if (drawOption == 0) {
-                    firstClick = latLng;
-                } else if (drawOption == 1) {
+                if (mMap.getCameraPosition().zoom >= 15.0) {
+                    clickedinitial=1;
+                    if (drawOption == 0) {
+                        firstClick = latLng;
+                    } else if (drawOption == 1) {
 //                    mMap.addMarker(new MarkerOptions().position(latLng));
 
-                } else if (drawOption == 2) {
-                    firstClick = latLng;
+                    } else if (drawOption == 2) {
+                        firstClick = latLng;
+                    }
+                } else {
+                    Toast.makeText(getApplicationContext(), "zoom more", Toast.LENGTH_SHORT).show();
                 }
             }
         });
@@ -104,42 +135,78 @@ public class NeighborhoodActivity extends FragmentActivity implements OnMapReady
             public void onMapLongClick(LatLng latLng) {
                 Log.d("Ibn", "draw option: " + drawOption);
                 double center = 0;
-                int radius = getDistanceFromLatLonInKm(firstClick,latLng);
-                if (drawOption == 0) {
-                    mMap.addCircle(new CircleOptions()
-                            .center(new LatLng(latLng.latitude, latLng.longitude))
-                            .radius(radius)
-                            .strokeColor(Color.RED));
-//                .fillColor(Color.BLUE));
-                } else if (drawOption == 1) {
-                    mMap.addMarker(new MarkerOptions().position(latLng));
+                if (mMap.getCameraPosition().zoom >= 15.0) {
+                    if (firstClick == null && drawOption != 1 && drawOption != -1) {
+                        Toast.makeText(getApplicationContext(), "Please click the initial point first", Toast.LENGTH_SHORT).show();
+                    } else if (drawOption == 0) {
+                        int radius = getDistanceFromLatLonInKm(firstClick, latLng);
+                        mMap.addCircle(new CircleOptions()
+                                .center(midPoint(firstClick, latLng))
+                                .radius(radius * 0.5)
+                                .strokeColor(Color.RED));
+                        clickedinitial = 0;
+                        firstClick = null;
+                    } else if (drawOption == 1) {
+                        mMap.addMarker(new MarkerOptions().position(latLng));
 
-                } else if (drawOption == 2) {
-                    mMap.addPolyline(new PolylineOptions()
-                            .add(latLng, firstClick)
-                            .width(5)
-                            .color(Color.GREEN));
+                    } else if (drawOption == 2) {
+                        mMap.addPolyline(new PolylineOptions()
+                                .add(latLng, firstClick)
+                                .width(5)
+                                .color(Color.RED));
+                        clickedinitial = 0;
+                        firstClick = null;
+                    } else if (clickedinitial == 0) {
+                        Toast.makeText(getApplicationContext(), "Please click the initial point first", Toast.LENGTH_SHORT).show();
+                    } else {
+                        Toast.makeText(getApplicationContext(), "Please select tool on the right first", Toast.LENGTH_SHORT).show();
+
+                    }
+                } else {
+                    Toast.makeText(getApplicationContext(), "zoom more", Toast.LENGTH_SHORT).show();
                 }
             }
         });
 
     }
 
-    public int getDistanceFromLatLonInKm(LatLng ll1,LatLng ll2) {
+    public int getDistanceFromLatLonInKm(LatLng ll1, LatLng ll2) {
         int R = 6371; // Radius of the earth in m
-        double dLat = deg2rad(ll2.latitude-ll1.latitude);  // deg2rad below
-        double dLon = deg2rad(ll2.longitude-ll1.longitude);
+        double dLat = deg2rad(ll2.latitude - ll1.latitude);  // deg2rad below
+        double dLon = deg2rad(ll2.longitude - ll1.longitude);
         double a =
-                Math.sin(dLat/2) * Math.sin(dLat/2) +
+                Math.sin(dLat / 2) * Math.sin(dLat / 2) +
                         Math.cos(deg2rad(ll1.latitude)) * Math.cos(deg2rad(ll2.latitude)) *
-                                Math.sin(dLon/2) * Math.sin(dLon/2)
-                ;
-        double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
-        double d = R * c *1000; // Distance in m
-        return (int)d;
+                                Math.sin(dLon / 2) * Math.sin(dLon / 2);
+        double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+        double d = R * c * 1000; // Distance in m
+        return (int) d;
     }
 
     public double deg2rad(Double deg) {
-        return deg * (Math.PI/180);
+        return deg * (Math.PI / 180);
+    }
+
+    public LatLng midPoint(LatLng ll1, LatLng ll2) {
+        double lat1 = ll1.latitude;
+        double lon1 = ll1.longitude;
+        double lat2 = ll2.latitude;
+        double lon2 = ll2.longitude;
+
+        double dLon = Math.toRadians(lon2 - lon1);
+
+        //convert to radians
+        lat1 = Math.toRadians(lat1);
+        lat2 = Math.toRadians(lat2);
+        lon1 = Math.toRadians(lon1);
+
+        double Bx = Math.cos(lat2) * Math.cos(dLon);
+        double By = Math.cos(lat2) * Math.sin(dLon);
+        double lat3 = Math.atan2(Math.sin(lat1) + Math.sin(lat2), Math.sqrt((Math.cos(lat1) + Bx) * (Math.cos(lat1) + Bx) + By * By));
+        double lon3 = lon1 + Math.atan2(By, Math.cos(lat1) + Bx);
+
+        //print out in degrees
+//        System.out.println(Math.toDegrees(lat3) + " " + Math.toDegrees(lon3));
+        return new LatLng(Math.toDegrees(lat3), Math.toDegrees(lon3));
     }
 }

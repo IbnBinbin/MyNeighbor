@@ -1,42 +1,70 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    xmlns:app="http://schemas.android.com/apk/res-auto" android:layout_width="match_parent"
+    android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="ibn.myneighbor.NeighborhoodActivity"
-    android:descendantFocusability="blocksDescendants">
+    android:descendantFocusability="blocksDescendants"
+    tools:context="ibn.myneighbor.NeighborhoodActivity">
 
-    <fragment xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:tools="http://schemas.android.com/tools"
-        xmlns:map="http://schemas.android.com/apk/res-auto" android:layout_width="match_parent"
-        android:layout_height="match_parent" android:id="@+id/map"
-        tools:context="ibn.myneighbor.NeighborhoodActivity"
-        android:name="com.google.android.gms.maps.SupportMapFragment" />
+    <fragment
+        android:id="@+id/map"
+        android:name="com.google.android.gms.maps.SupportMapFragment"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:context="ibn.myneighbor.NeighborhoodActivity" />
 
     <LinearLayout
+        android:id="@+id/linearLayout"
         android:layout_width="32dp"
         android:layout_height="95dp"
-        android:background="@color/common_action_bar_splitter"
-        android:layout_alignParentTop="true"
         android:layout_alignParentRight="true"
+        android:layout_alignParentTop="true"
         android:layout_marginTop="200dp"
+        android:background="@color/common_action_bar_splitter"
         android:orientation="vertical">
+
         <ImageButton
+            android:id="@+id/circle"
             android:layout_width="30dp"
             android:layout_height="30dp"
-            android:background="@drawable/circle"
-            android:id="@+id/circle"/>
+            android:background="@drawable/circle" />
+
         <ImageButton
+            android:id="@+id/point"
             android:layout_width="30dp"
             android:layout_height="30dp"
-            android:background="@drawable/point"
-            android:id="@+id/point"/>
+            android:background="@drawable/point" />
+
         <ImageButton
+            android:id="@+id/line"
             android:layout_width="30dp"
             android:layout_height="30dp"
-            android:background="@drawable/line"
-            android:id="@+id/line"/>
+            android:background="@drawable/line" />
     </LinearLayout>
 
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:orientation="horizontal">
+
+        <Button
+            android:id="@+id/cancelButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom"
+            android:layout_weight="1"
+            android:text="Cancel" />
+
+        <Button
+            android:id="@+id/saveButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom"
+            android:layout_weight="1"
+            android:text="Save" />
+    </LinearLayout>
 
 
 </RelativeLayout>
