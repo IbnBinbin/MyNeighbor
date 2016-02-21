@@ -67,7 +67,7 @@ public class MainActivity extends AppCompatActivity
     };
 
     private ListView listView;
-    private String SelectedActivity;
+    private String selectedActivity;
     private int tmp_subgroupActivity =-1;
 //    private ImageButton chat;
 
@@ -107,13 +107,13 @@ public class MainActivity extends AppCompatActivity
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 if(tmp_subgroupActivity==0||tmp_subgroupActivity==-1){
-                    SelectedActivity = mocActivityNeed[+position];
+                    selectedActivity = mocActivityNeed[+position];
                 }else{
-                    SelectedActivity = subgroup__mocActivityNeed[+position];
+                    selectedActivity = subgroup__mocActivityNeed[+position];
                 }
 //                Toast.makeText(getApplicationContext(), SlectedActivity, Toast.LENGTH_SHORT).show();
                 Intent detailActivity = new Intent(view.getContext(), DetailActivity.class);
-                detailActivity.putExtra("SelectedActivity", SelectedActivity);
+                detailActivity.putExtra("SelectedActivity", selectedActivity);
                 startActivity(detailActivity);
             }
 
