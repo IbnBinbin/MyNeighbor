@@ -12,6 +12,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
+import ibn.myneighbor.Model.Activity;
+
 /**
  * Created by ttnok on 21/2/2559.
  */
@@ -139,18 +141,19 @@ public class LocalStorageAdapter extends SQLiteOpenHelper {
         return check;
     }
 
-    public long createActivity(String title, String desc, int req_offer, String groupName, Date expire, String owner) {
+//    public long createActivity(String title, String desc, int req_offer, String groupName, Date expire, String owner) {
+    public long createActivity(Activity a) {
 
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues values = new ContentValues();
-        values.put(KEY_TITLE, title);
-        values.put(KEY_DESCRIPTION, desc);
-        values.put(KEY_REQUEST_OR_OFFER, req_offer);
-        values.put(KEY_GROUP_NAME, groupName);
-        values.put(KEY_EXPIRT_DATE, getDateTime(expire));
+        values.put(KEY_TITLE, a.getTitle());
+        values.put(KEY_DESCRIPTION, a.getDescription());
+        values.put(KEY_REQUEST_OR_OFFER, a.getRequestOrOffer());
+        values.put(KEY_GROUP_NAME, a.getGroupName());
+        values.put(KEY_EXPIRT_DATE, getDateTime(a.getexpireDate()));
         values.put(KEY_CREATED_AT, getDateTime());
         values.put(KEY_UPDATED_AT, getDateTime());
-        values.put(KEY_OWNER, owner);
+        values.put(KEY_OWNER, a.getOwner());
         long check = db.insert(TABLE_ACTIVITY, null, values);
 
         return check;
@@ -207,6 +210,12 @@ public class LocalStorageAdapter extends SQLiteOpenHelper {
         return db.update(TABLE_USER, values, KEY_ID + "=?", new String[]{String.valueOf(id)});
     }
 
+    public ArrayList<Activity> getActivity(String group){
+        ArrayList<Activity> listActivity=null;
+        //TODO...
+//        Activity a = new Activity()
+        return listActivity;
+    }
 //    public List<Integer> getAllAlarmIDs(int occurrence_id) {
 //        ArrayList<Integer> alarmIDs = new ArrayList<Integer>();
 //        String selectQuery = "SELECT  * FROM " + TABLE_ALARMIDS + " WHERE "

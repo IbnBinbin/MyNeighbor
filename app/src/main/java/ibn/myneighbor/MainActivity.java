@@ -20,6 +20,9 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.ArrayAdapter;
 import android.util.Log;
+import java.util.Date;
+
+import ibn.myneighbor.Model.Activity;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
@@ -73,6 +76,15 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        LocalStorageAdapter db = new LocalStorageAdapter(getApplicationContext());
+        db.createActivity(new Activity("Feeding Dog", "dog dog dog", 0, "all", new Date(), "Ibn"));
+        db.createActivity(new Activity("Babysisting", "baby baby baby", 0, "all", new Date(), "Pop"));
+        db.createActivity(new Activity("Car Pool", "carrrrr", 1, "all", new Date(), "Egg"));
+        db.createActivity(new Activity("Math Tutoring", "12345", 0, "all", new Date(), "Touch"));
+        db.createActivity(new Activity("Plants Waatering", "waterr", 0, "all", new Date(), "Pim"));
+        db.createActivity(new Activity("Ubuntu", "!!??!", 1, "all", new Date(), "Ibn"));
+        db.createActivity(new Activity("Dating", "~~~", 0, "all", new Date(), "Ibn"));
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
