@@ -200,7 +200,7 @@ public class LocalStorageAdapter extends SQLiteOpenHelper {
         values.put(KEY_CREATED_AT, getDateTime());
         values.put(KEY_CHAT_MESSAGE,c.getChatMessage());
         long check = db.insert(TABLE_CONVERSATION, null, values);
-
+        //TODO: add 1 more parameeter to point to the real owner
         return check;
     }
 
@@ -312,7 +312,7 @@ public class LocalStorageAdapter extends SQLiteOpenHelper {
     public ArrayList<Conversation> getAllConversation(String owner) {
         ArrayList<Conversation> listAllConversation = new ArrayList<Conversation>();
         String selectQuery = "SELECT * FROM " + TABLE_CONVERSATION + " WHERE "
-                + KEY_OWNER + " = '" + owner + "'"+" OR "+ KEY_CLIENT + " = '" + owner + "'";
+                + KEY_OWNER + " = '" + owner + "'"+" OR "+ KEY_CLIENT + " = '" + owner + "' GROUP BY "+KEY_OWNER+", "+KEY_TOPIC;
 
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor c = db.rawQuery(selectQuery, null);
@@ -323,6 +323,38 @@ public class LocalStorageAdapter extends SQLiteOpenHelper {
         }
 
         return listAllConversation;
+    }
+
+    public ArrayList<Conversation> getSpecificConversation(String owner, String topic) {
+        ArrayList<Conversation> listAllConversation = new ArrayList<Conversation>();
+        String selectQuery = "SELECT * FROM " + TABLE_CONVERSATION + " WHERE ("
+                + KEY_OWNER + " = '" + owner + "'"+" AND "+ KEY_TOPIC + " = '" + topic + "') OR ("+ KEY_CLIENT + " = '" + owner + "'"+" AND "+ KEY_TOPIC + " = '" + topic + "')";
+
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor c = db.rawQuery(selectQuery, null);
+        if (c.moveToFirst()) {
+            do {
+                listAllConversation.add(new Conversation(c.getString(c.getColumnIndex(KEY_TOPIC)), c.getString(c.getColumnIndex(KEY_OWNER)), c.getString(c.getColumnIndex(KEY_CLIENT)), c.getString(c.getColumnIndex(KEY_CHAT_MESSAGE))));
+            } while (c.moveToNext());
+        }
+
+        return listAllConversation;
+    }
+
+    public ArrayList<Neighborhood> getNeighborhood(String username) {
+        ArrayList<Neighborhood> nbMarks = new ArrayList<Neighborhood>();
+        String selectQuery = "SELECT * FROM " + TABLE_NEIGHBORHOOD+ " WHERE "
+                + KEY_OWNER + " = '" + username + "'";
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor c = db.rawQuery(selectQuery, null);
+        if (c.moveToFirst()) {
+            do {
+//                Log.d("Ibn",c.getString(c.getColumnIndex(KEY_INITIAL_POINT))+" "+c.getColumnIndex(KEY_FINAL_POINT)+" "+c.getColumnIndex(KEY_DRAW_TYPE));
+                nbMarks.add(new Neighborhood(c.getString(c.getColumnIndex(KEY_INITIAL_POINT)), c.getString(c.getColumnIndex(KEY_FINAL_POINT)), Integer.parseInt(c.getString(c.getColumnIndex(KEY_DRAW_TYPE))), c.getString(c.getColumnIndex(KEY_OWNER))));
+            } while (c.moveToNext());
+        }
+
+        return nbMarks;
     }
 
     // closing database
@@ -347,6 +379,7 @@ public class LocalStorageAdapter extends SQLiteOpenHelper {
                 "yyyy-MM-dd HH:mm:ss", Locale.getDefault());
         return dateFormat.format(date);
     }
+
 
 
 }

@@ -34,6 +34,7 @@ public class AllChatActivity extends AppCompatActivity {
         setContentView(R.layout.activity_all_chat);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         db = new LocalStorageAdapter(this.getApplicationContext());
         ArrayList<Conversation> allConversation = new ArrayList<Conversation>();
@@ -41,7 +42,6 @@ public class AllChatActivity extends AppCompatActivity {
 
         allConversation = db.getAllConversation("Ibn");
 
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         user = new ArrayList<User>();
         activityNeedList = new ArrayList<String>();

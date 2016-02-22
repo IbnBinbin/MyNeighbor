@@ -21,12 +21,20 @@ import android.widget.Button;
 import android.graphics.Color;
 import android.widget.Toast;
 
+import java.util.ArrayList;
+
+import ibn.myneighbor.Model.Neighborhood;
+
 public class NeighborhoodActivity extends FragmentActivity implements OnMapReadyCallback {
 
     private GoogleMap mMap;
     private int drawOption;
     private int clickedinitial;
     private LatLng firstClick;
+    private LatLng finalP;
+    private ArrayList<String[]> allLatLng;
+    private String[] aLatLng; //0:init/1:final/2:type
+    private ArrayList<Neighborhood> nb;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,8 +45,14 @@ public class NeighborhoodActivity extends FragmentActivity implements OnMapReady
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
 
-        drawOption = -1;
+        LocalStorageAdapter db = new LocalStorageAdapter(this);
+        nb = new ArrayList<Neighborhood>();
+        nb.addAll(db.getNeighborhood("Ibn"));
+        allLatLng = new ArrayList<String[]>();
 
+        db.closeDB();
+
+        drawOption = -1;
         ImageButton circle = (ImageButton) findViewById(R.id.circle);
         circle.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -69,7 +83,7 @@ public class NeighborhoodActivity extends FragmentActivity implements OnMapReady
         cancel.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent createNewActivity = new Intent(view.getContext(),MainActivity.class);
+                Intent createNewActivity = new Intent(view.getContext(), MainActivity.class);
                 startActivity(createNewActivity);
             }
         });
@@ -78,12 +92,16 @@ public class NeighborhoodActivity extends FragmentActivity implements OnMapReady
         save.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent createNewActivity = new Intent(view.getContext(),MainActivity.class);
+                LocalStorageAdapter db = new LocalStorageAdapter(view.getContext());
+                for (int i = 0; i < allLatLng.size(); i++) {
+                    db.createNeighborhood(allLatLng.get(i)[0], allLatLng.get(i)[1], Integer.parseInt(allLatLng.get(i)[2]), "Ibn");
+                }
+                db.closeDB();
+                Intent createNewActivity = new Intent(view.getContext(), MainActivity.class);
                 startActivity(createNewActivity);
-                //Todo save data
+
             }
         });
-
 
 
     }
@@ -112,11 +130,31 @@ public class NeighborhoodActivity extends FragmentActivity implements OnMapReady
 
 //        float zoom = mMap.getCameraPosition().zoom;
 
+        for (int i = 0; i < nb.size(); i++) {
+            if (nb.get(i).getDrawType() == 0) {
+                int radius = getDistanceFromLatLonInKm(new LatLng(Double.parseDouble(nb.get(i).getInitialPoint().split(",")[0]), Double.parseDouble(nb.get(i).getInitialPoint().split(",")[1])), new LatLng(Double.parseDouble(nb.get(i).getFinalPoint().split(",")[0]), Double.parseDouble(nb.get(i).getFinalPoint().split(",")[1])));
+                mMap.addCircle(new CircleOptions()
+                        .center(midPoint(new LatLng(Double.parseDouble(nb.get(i).getInitialPoint().split(",")[0]), Double.parseDouble(nb.get(i).getInitialPoint().split(",")[1])), new LatLng(Double.parseDouble(nb.get(i).getFinalPoint().split(",")[0]), Double.parseDouble(nb.get(i).getFinalPoint().split(",")[1]))))
+                        .radius(radius * 0.5)
+                        .strokeColor(Color.RED));
+            } else if (nb.get(i).getDrawType() == 1) {
+                mMap.addMarker(new MarkerOptions().position(new LatLng(Double.parseDouble(nb.get(i).getFinalPoint().split(",")[0]), Double.parseDouble(nb.get(i).getFinalPoint().split(",")[1]))));
+
+            } else if (nb.get(i).getDrawType() == 2) {
+                mMap.addPolyline(new PolylineOptions()
+                        .add(new LatLng(Double.parseDouble(nb.get(i).getFinalPoint().split(",")[0]), Double.parseDouble(nb.get(i).getFinalPoint().split(",")[1])), new LatLng(Double.parseDouble(nb.get(i).getInitialPoint().split(",")[0]), Double.parseDouble(nb.get(i).getInitialPoint().split(",")[1])))
+                        .width(5)
+                        .color(Color.RED));
+            }
+        }
+
         mMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
             @Override
             public void onMapClick(LatLng latLng) {
+                aLatLng = new String[3];
+                aLatLng[0] = latLng.latitude + "," + latLng.longitude;
                 if (mMap.getCameraPosition().zoom >= 15.0) {
-                    clickedinitial=1;
+                    clickedinitial = 1;
                     if (drawOption == 0) {
                         firstClick = latLng;
                     } else if (drawOption == 1) {
@@ -133,35 +171,48 @@ public class NeighborhoodActivity extends FragmentActivity implements OnMapReady
         mMap.setOnMapLongClickListener(new GoogleMap.OnMapLongClickListener() {
             @Override
             public void onMapLongClick(LatLng latLng) {
-                Log.d("Ibn", "draw option: " + drawOption);
-                double center = 0;
+                finalP = latLng;
                 if (mMap.getCameraPosition().zoom >= 15.0) {
                     if (firstClick == null && drawOption != 1 && drawOption != -1) {
                         Toast.makeText(getApplicationContext(), "Please click the initial point first", Toast.LENGTH_SHORT).show();
                     } else if (drawOption == 0) {
+                        aLatLng[1] = latLng.latitude + "," + latLng.longitude;
+
                         int radius = getDistanceFromLatLonInKm(firstClick, latLng);
                         mMap.addCircle(new CircleOptions()
                                 .center(midPoint(firstClick, latLng))
                                 .radius(radius * 0.5)
                                 .strokeColor(Color.RED));
                         clickedinitial = 0;
+                        aLatLng[2] = Integer.toString(drawOption);
+                        allLatLng.add(aLatLng);
                         firstClick = null;
                     } else if (drawOption == 1) {
+                        aLatLng = new String[3];
+                        aLatLng[1] = latLng.latitude + "," + latLng.longitude;
+                        aLatLng[0] = "0,0";
+                        aLatLng[1] = latLng.latitude + "," + latLng.longitude;
                         mMap.addMarker(new MarkerOptions().position(latLng));
-
+                        aLatLng[2] = Integer.toString(drawOption);
+                        allLatLng.add(aLatLng);
                     } else if (drawOption == 2) {
+                        aLatLng[1] = latLng.latitude + "," + latLng.longitude;
+
                         mMap.addPolyline(new PolylineOptions()
                                 .add(latLng, firstClick)
                                 .width(5)
                                 .color(Color.RED));
                         clickedinitial = 0;
                         firstClick = null;
+                        aLatLng[2] = Integer.toString(drawOption);
+                        allLatLng.add(aLatLng);
                     } else if (clickedinitial == 0) {
                         Toast.makeText(getApplicationContext(), "Please click the initial point first", Toast.LENGTH_SHORT).show();
                     } else {
                         Toast.makeText(getApplicationContext(), "Please select tool on the right first", Toast.LENGTH_SHORT).show();
 
                     }
+                    Log.d("Ibn", allLatLng.size() + "");
                 } else {
                     Toast.makeText(getApplicationContext(), "zoom more", Toast.LENGTH_SHORT).show();
                 }
