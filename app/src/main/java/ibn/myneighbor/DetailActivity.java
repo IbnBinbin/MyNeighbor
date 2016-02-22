@@ -29,9 +29,11 @@ public class DetailActivity extends AppCompatActivity {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         Bundle bundle=getIntent().getExtras();
-        String Slecteditem=bundle.getString("SelectedActivity");
+        String ownerName=bundle.getString("ownerName");
+        String activity=bundle.getString("activity");
+        int imgID=bundle.getInt("imgID");
         TextView textView = (TextView) findViewById(R.id.activity_name);
-        textView.setText(Slecteditem);
+        textView.setText(ownerName+": "+activity);
 
     }
 

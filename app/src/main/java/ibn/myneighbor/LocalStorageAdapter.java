@@ -13,9 +13,12 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
-import ibn.myneighbor.Model.Activity;
+import ibn.myneighbor.Model.*;
+
 import org.joda.time.LocalTime;
+
 import android.util.Log;
+
 import java.text.SimpleDateFormat;
 
 /**
@@ -130,14 +133,14 @@ public class LocalStorageAdapter extends SQLiteOpenHelper {
         db.delete(TABLE_NEIGHBORHOOD, null, null);
     }
 
-    public long createUser(String userName, String bio, int profilePic, String password) {
+    public long createUser(User u) {
 
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues values = new ContentValues();
-        values.put(KEY_USERNAME, userName);
-        values.put(KEY_BIO, bio);
-        values.put(KEY_PROFILE_PIC_ID, profilePic);
-        values.put(KEY_PASSWORD, password);
+        values.put(KEY_USERNAME, u.getUsername());
+        values.put(KEY_BIO, u.getBio());
+        values.put(KEY_PROFILE_PIC_ID, u.getProfilePic());
+        values.put(KEY_PASSWORD, u.getPassword());
         values.put(KEY_CREATED_AT, getDateTime());
         values.put(KEY_UPDATED_AT, getDateTime());
         long check = db.insert(TABLE_USER, null, values);
@@ -163,13 +166,13 @@ public class LocalStorageAdapter extends SQLiteOpenHelper {
         return check;
     }
 
-    public long createGroup(String owner, String groupName, String member) {
+    public long createGroup(Group g) {
 
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues values = new ContentValues();
-        values.put(KEY_OWNER, owner);
-        values.put(KEY_GROUP_NAME, groupName);
-        values.put(KEY_MEMBER, member);
+        values.put(KEY_OWNER, g.getOwner());
+        values.put(KEY_GROUP_NAME, g.getGroupName());
+        values.put(KEY_MEMBER, g.getMember());
         long check = db.insert(TABLE_GROUP, null, values);
 
         return check;
@@ -216,8 +219,13 @@ public class LocalStorageAdapter extends SQLiteOpenHelper {
 
     public ArrayList<Activity> getActivity(String group) throws ParseException {
         ArrayList<Activity> listActivity = new ArrayList<Activity>();
-        String selectQuery = "SELECT * FROM " + TABLE_ACTIVITY + " WHERE "
-                + KEY_GROUP_NAME + " = '" + group+"'";
+        String selectQuery;
+        if (group.equals("all")) {
+            selectQuery = "SELECT * FROM " + TABLE_ACTIVITY;
+        } else {
+            selectQuery = "SELECT * FROM " + TABLE_ACTIVITY + " WHERE "
+                    + KEY_GROUP_NAME + " = '" + group + "'";
+        }
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor c = db.rawQuery(selectQuery, null);
         if (c.moveToFirst()) {
@@ -229,33 +237,64 @@ public class LocalStorageAdapter extends SQLiteOpenHelper {
 //                Log.d("Ibn", c.getString(c.getColumnIndex(KEY_GROUP_NAME)));
 //                Log.d("Ibn", c.getString(c.getColumnIndex(KEY_EXPIRT_DATE)));
 //                Log.d("Ibn", c.getString(c.getColumnIndex(KEY_OWNER)));
-                String tmp_date =c.getString(c.getColumnIndex(KEY_EXPIRT_DATE));
-                Date d =formatter.parse(tmp_date);
+                String tmp_date = c.getString(c.getColumnIndex(KEY_EXPIRT_DATE));
+                Date d = formatter.parse(tmp_date);
                 listActivity.add(new Activity(c.getString(c.getColumnIndex(KEY_TITLE)), c.getString(c.getColumnIndex(KEY_DESCRIPTION)), c.getInt(c.getColumnIndex(KEY_REQUEST_OR_OFFER)), c.getString(c.getColumnIndex(KEY_GROUP_NAME)), d, c.getString(c.getColumnIndex(KEY_OWNER))));
             } while (c.moveToNext());
         }
 //        Activity a = new Activity()
         return listActivity;
     }
-//    public List<Integer> getAllAlarmIDs(int occurrence_id) {
-//        ArrayList<Integer> alarmIDs = new ArrayList<Integer>();
-//        String selectQuery = "SELECT  * FROM " + TABLE_ALARMIDS + " WHERE "
-//                + KEY_OCCURRENCE_ID + " = " + occurrence_id;
-//        String selectQuery = "SELECT  * FROM " + TABLE_OCCURRENCES +" WHERE "+KEY_REMINDER_ID +"="+reminder_id;
-//        String selectQuery = "SELECT  * FROM " + TABLE_TASKS +" WHERE "+KEY_REMINDER_ID +"="+reminder_id;
-//
-//
-//        SQLiteDatabase db = this.getReadableDatabase();
-//        Cursor c = db.rawQuery(selectQuery, null);
-//
-//        if (c.moveToFirst()) {
-//            do {
-//                alarmIDs.add(c.getInt(c.getColumnIndex(KEY_VALUE_ALAREMID)));
-//            } while (c.moveToNext());
-//        }
-//
-//        return alarmIDs;
-//    }
+
+    public ArrayList<Group> getGroups() {
+        ArrayList<Group> groups = new ArrayList<Group>();
+        String selectQuery = "SELECT DISTINCT " + KEY_GROUP_NAME + ", " + KEY_OWNER + ", " + KEY_ID + ", " + KEY_MEMBER + " FROM " + TABLE_GROUP;
+
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor c = db.rawQuery(selectQuery, null);
+        if (c.moveToFirst()) {
+            do {
+                groups.add(new Group(c.getInt(c.getColumnIndex(KEY_ID)), c.getString(c.getColumnIndex(KEY_OWNER)), c.getString(c.getColumnIndex(KEY_GROUP_NAME)), c.getString(c.getColumnIndex(KEY_MEMBER))));
+            } while (c.moveToNext());
+        }
+        return groups;
+    }
+
+    public ArrayList<User> getUser(String owner) {
+        ArrayList<User> listUser = new ArrayList<User>();
+        String selectQuery = "SELECT * FROM " + TABLE_USER + " WHERE "
+                + KEY_USERNAME + " = '" + owner + "'";
+
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor c = db.rawQuery(selectQuery, null);
+        if (c.moveToFirst()) {
+            do {
+                listUser.add(new User(c.getString(c.getColumnIndex(KEY_USERNAME)), c.getString(c.getColumnIndex(KEY_BIO)), c.getInt(c.getColumnIndex(KEY_PROFILE_PIC_ID)), c.getString(c.getColumnIndex(KEY_PASSWORD))));
+            } while (c.moveToNext());
+        }
+
+        return listUser;
+    }
+
+    public ArrayList<Activity> getPersonalActivity(String owner) throws ParseException {
+        ArrayList<Activity> listActivity = new ArrayList<Activity>();
+        String selectQuery = "SELECT * FROM " + TABLE_ACTIVITY + " WHERE "
+                + KEY_OWNER + " = '" + owner + "'";
+
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor c = db.rawQuery(selectQuery, null);
+        if (c.moveToFirst()) {
+            do {
+                SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                String tmp_date = c.getString(c.getColumnIndex(KEY_EXPIRT_DATE));
+                Date d = formatter.parse(tmp_date);
+                listActivity.add(new Activity(c.getString(c.getColumnIndex(KEY_TITLE)), c.getString(c.getColumnIndex(KEY_DESCRIPTION)), c.getInt(c.getColumnIndex(KEY_REQUEST_OR_OFFER)), c.getString(c.getColumnIndex(KEY_GROUP_NAME)), d, c.getString(c.getColumnIndex(KEY_OWNER))));
+            } while (c.moveToNext());
+        }
+
+        return listActivity;
+
+    }
 
     // closing database
     public void closeDB() {

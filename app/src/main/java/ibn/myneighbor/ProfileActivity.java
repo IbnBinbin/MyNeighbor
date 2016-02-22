@@ -9,23 +9,22 @@ import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
+import java.util.*;
+
+import java.text.ParseException;
+
+import ibn.myneighbor.Model.Activity;
+import ibn.myneighbor.Model.User;
 
 public class ProfileActivity extends AppCompatActivity {
-
-    private String[] profile__mocActivityNeed = {
-            "Feeding Dog",
-            "Math Tutoring",
-            "Plants Waatering",
-    };
-
-    private Integer[] profile_imgid = {
-            R.drawable.panda,
-            R.drawable.panda,
-            R.drawable.panda,
-    };
-
+    private LocalStorageAdapter db;
     private ListView listView;
     private String selectedActivity;
+    private ArrayList<User> user;
+    private ArrayList<String> activityNeedList;
+    private ArrayList<String> ownerList;
+    private ArrayList<Integer> offerOrReqList;
+    private ArrayList<Integer> profilePicList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,7 +43,34 @@ public class ProfileActivity extends AppCompatActivity {
         });
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        CustomListAdapter adapter = new CustomListAdapter(this, profile__mocActivityNeed, profile_imgid);
+        db = new LocalStorageAdapter(this.getApplicationContext());
+        ArrayList<Activity> personalActivity=new ArrayList<Activity>();
+        ArrayList<User> personalImgID=new ArrayList<User>();
+        try {
+            personalActivity=db.getPersonalActivity("Ibn");
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        db.getUser("Ibn");
+
+        user=new ArrayList<User>();
+        activityNeedList=new ArrayList<String>();
+        ownerList=new ArrayList<String>();
+        offerOrReqList=new ArrayList<Integer>();
+        profilePicList=new ArrayList<Integer>();
+        for (int i = 0; i < personalActivity.size(); i++) {
+            activityNeedList.add(personalActivity.get(i).getTitle());
+            ownerList.add(personalActivity.get(i).getOwner());
+            offerOrReqList.add(personalActivity.get(i).getRequestOrOffer());
+            user.addAll(db.getUser(ownerList.get(i)));
+
+        }
+        for (int i = 0; i < user.size(); i++) {
+            profilePicList.add(user.get(i).getProfilePic());
+        }
+
+
+        CustomListAdapter adapter = new CustomListAdapter(this, activityNeedList, profilePicList, ownerList, offerOrReqList);
         adapter.notifyDataSetChanged();
         listView = (ListView) findViewById(R.id.activity_need);
         listView.setAdapter(adapter);
@@ -53,20 +79,26 @@ public class ProfileActivity extends AppCompatActivity {
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                selectedActivity = profile__mocActivityNeed[+position];
+//                selectedActivity = activityNeedList.get(+position);
+
 
 //                Toast.makeText(getApplicationContext(), SlectedActivity, Toast.LENGTH_SHORT).show();
                 Intent detailActivity = new Intent(view.getContext(), DetailActivity.class);
-                detailActivity.putExtra("SelectedActivity", selectedActivity);
+                ArrayList<String> tag = (ArrayList<String>)view.getTag();
+                detailActivity.putExtra("ownerName", tag.get(0));
+                detailActivity.putExtra("activity", tag.get(1));
+                detailActivity.putExtra("imgID", Integer.parseInt(tag.get(2)));
+//                detailActivity.putExtra("SelectedActivity", selectedActivity);
                 startActivity(detailActivity);
             }
 
         });
+        db.closeDB();
     }
 
     public void onClickEdit(View view) {
         Intent createNewActivity = new Intent(view.getContext(), CreateNewActivity.class);
-        //Todo query data and sent to create/edit page
+        //Todo edit profile page: query profile detail
 //        createNewActivity.putExtra("ProfileDetail", ...);
         startActivity(createNewActivity);
     }

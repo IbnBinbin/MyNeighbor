@@ -15,16 +15,16 @@
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
         android:paddingLeft="30dp"
-        android:text="Title"
+        android:text="Group Name"
         android:textSize="30dp"
-        android:id="@+id/title"/>
+        android:id="@+id/groupName"/>
 
     <EditText
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/titleText"
+        android:id="@+id/groupNameText"
         android:layout_alignParentTop="true"
-        android:layout_alignRight="@+id/title" />
+        android:layout_alignRight="@+id/groupName" />
 
     <EditText
         android:layout_width="match_parent"

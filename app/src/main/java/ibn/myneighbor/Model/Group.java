@@ -5,19 +5,20 @@ package ibn.myneighbor.Model;
  */
 public class Group {
     private  int id;
-    private String username;
+    private String owner;
     private String group_name;
     private String member;
 
-    public Group (String username, String group_name, String member){
-        this.username=username;
+    public Group (int id, String owner, String group_name, String member){
+        this.id=id;
+        this.owner=owner;
         this.group_name=group_name;
         this.member=member;
     }
 
-    public String getUsername(){return username;}
+    public int getID(){return id;}
+    public String getOwner(){return owner;}
     public String getGroupName(){return group_name;}
     public String getMember(){return member;}
 
-    public void setID(int id){this.id= id;}
 }

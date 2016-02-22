@@ -3,116 +3,43 @@ package ibn.myneighbor;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentTransaction;
-import android.support.v7.widget.RecyclerView;
-import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.view.Menu;
-import android.view.SubMenu;
-import android.view.MenuItem;
-import android.widget.AdapterView;
-import android.widget.ListView;
-import android.widget.ArrayAdapter;
+import android.view.*;
+import android.widget.*;
 import android.util.Log;
 
-import org.joda.time.LocalTime;
-
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 
-import ibn.myneighbor.Model.Activity;
+import ibn.myneighbor.Model.*;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
-    private ArrayList<String> activityNeed = new ArrayList<String>();
-    private String activityNeed_s[];
-    private ArrayList<String> subgroup_activityNeed = new ArrayList<String>();
-    private String subgroup_activityNeed_s[];
+    private ArrayList<String> activityNeedList = new ArrayList<String>();
+    private ArrayList<String> ownerList = new ArrayList<String>();
+    private ArrayList<Integer> profilePicList = new ArrayList<Integer>();
+    private ArrayList<Integer> offerOrReqList = new ArrayList<Integer>();
 
-//    private String[] mocActivityNeed = {
-//            "Feeding Dog",
-//            "Babysisting",
-//            "Car Pool",
-//            "Math Tutoring",
-//            "Plants Waatering",
-//            "Ubuntu", "Windows7",
-//            "Max OS X"
-//    };
-
-    private Integer[] imgid = {
-            R.drawable.animation,
-            R.drawable.bear,
-            R.drawable.dolphin,
-            R.drawable.human1,
-            R.drawable.human2,
-            R.drawable.octopus,
-            R.drawable.panda,
-            R.drawable.snowman,
-    };
-
-    private String[] group = {
-            "home",
-            "school",
-            "gym",
-            "internship",
-            "company",
-            "friends",
-            "love"
-    };
-
-    private String[] subgroup__mocActivityNeed = {
-            "Feeding Dog",
-            "Car Pool",
-            "Math Tutoring",
-    };
-
-    private Integer[] subgroup_imgid = {
-            R.drawable.animation,
-            R.drawable.dolphin,
-            R.drawable.human2,
-    };
 
     private ListView listView;
     private String selectedActivity;
-    private int tmp_subgroupActivity = -1;
-    public LocalStorageAdapter db;
+    private String accountOwner = "Ibn";
+    private LocalStorageAdapter db;
+    private ArrayList<Group> allGroups;
 //    private ImageButton chat;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        db = new LocalStorageAdapter(this.getApplicationContext());
-//        db.deleteAllData();
-//        Date d = formatter.parse(new Date());
-//        db.createActivity(new Activity("Feeding Dog", "dog dog dog", 0, "all", new Date(), "Ibn"));
-//        db.createActivity(new Activity("Babysisting", "baby baby baby", 0, "home", new Date(), "Pop"));
-//        db.createActivity(new Activity("Car Pool", "carrrrr", 1, "all", new Date(), "Egg"));
-//        db.createActivity(new Activity("Math Tutoring", "12345", 0, "home", new Date(), "Touch"));
-//        db.createActivity(new Activity("Plants Waatering", "waterr", 0, "all", new Date(), "Pim"));
-//        db.createActivity(new Activity("Ubuntu", "!!??!", 1, "all", new Date(), "Ibn"));
-//        db.createActivity(new Activity("Dating", "~~~", 0, "all", new Date(), "Ibn"));
-
-        ArrayList<Activity> act = new ArrayList<Activity>();
-        try {
-            act.addAll(db.getActivity("all"));
-        } catch (ParseException e) {
-            e.printStackTrace();
-            Log.d("Ibn", "error");
-        }
-        db.closeDB();
-
-        for (int i = 0; i < act.size(); i++) {
-            activityNeed.add(act.get(i).getTitle());
-        }
+//        db=new LocalStorageAdapter(this.getApplicationContext());
+//        assignInitialData(db);
+//        db.close();
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
@@ -128,6 +55,8 @@ public class MainActivity extends AppCompatActivity
             }
         });
 
+        updateActivityAndOwnerPic("all");
+
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
@@ -137,26 +66,19 @@ public class MainActivity extends AppCompatActivity
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
-        activityNeed_s = new String[activityNeed.size()];
-        activityNeed_s = activityNeed.toArray(activityNeed_s);
-
-        CustomListAdapter adapter = new CustomListAdapter(this, activityNeed_s, imgid);
-        adapter.notifyDataSetChanged();
-        listView = (ListView) findViewById(R.id.activity_need);
-        listView.setAdapter(adapter);
-
 
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-//                if (tmp_subgroupActivity == 0 || tmp_subgroupActivity == -1) {
-                    selectedActivity = activityNeed_s[+position];
-//                } else {
-//                    selectedActivity = subgroup__mocActivityNeed[+position];
-//                }
+                    selectedActivity = activityNeedList.get(+position);
+
 //                Toast.makeText(getApplicationContext(), SlectedActivity, Toast.LENGTH_SHORT).show();
                 Intent detailActivity = new Intent(view.getContext(), DetailActivity.class);
-                detailActivity.putExtra("SelectedActivity", selectedActivity);
+                ArrayList<String> tag = (ArrayList<String>)view.getTag();
+                detailActivity.putExtra("ownerName", tag.get(0));
+                detailActivity.putExtra("activity", tag.get(1));
+                detailActivity.putExtra("imgID", Integer.parseInt(tag.get(2)));
+//                detailActivity.putExtra("SelectedActivity", selectedActivity);
                 startActivity(detailActivity);
             }
 
@@ -166,19 +88,43 @@ public class MainActivity extends AppCompatActivity
         Menu m = navView.getMenu();
         SubMenu subGroup = m.addSubMenu("Groups");
         subGroup.add(0, 0, 0, "All");
-        for (int i = 0; i < group.length; i++) {
-            subGroup.add(0, i + 1, i + 1, group[i]); //group_id, item_id, order
+        allGroups=db.getGroups();
+        for (int i = 0; i < allGroups.size(); i++) {
+            subGroup.add(0, allGroups.get(i).getID(), i + 1, allGroups.get(i).getGroupName()); //group_id, item_id, order
         }
 
 
     }
 
+    private void assignInitialData(LocalStorageAdapter db) {
+        db.deleteAllData();
+        db.createActivity(new Activity("Feeding Dog", "dog dog dog", 0, "Gym", new Date(), "Egg"));
+        db.createActivity(new Activity("Babysisting", "baby baby baby", 0, "home", new Date(), "Ibn"));
+        db.createActivity(new Activity("Car Pool", "carrrrr", 1, "school", new Date(), "Pop"));
+        db.createActivity(new Activity("Math Tutoring", "12345", 0, "home", new Date(), "Touch"));
+        db.createActivity(new Activity("Plants Waatering", "waterr", 0, "school", new Date(), "Pim"));
+        db.createActivity(new Activity("Ubuntu", "...", 1, "gym", new Date(), "Pim"));
+        db.createActivity(new Activity("Dating", "~~~", 0, "all", new Date(), "Ibn"));
+
+        db.createUser(new User("Ibn", "...", R.drawable.animation, "1234"));
+        db.createUser(new User("Pop", "...", R.drawable.dolphin, "1111"));
+        db.createUser(new User("Egg", "...", R.drawable.bear, "1232"));
+        db.createUser(new User("Touch", "...", R.drawable.octopus, "122"));
+        db.createUser(new User("Pim", "...", R.drawable.snowman, "333"));
+        db.createGroup(new Group(0, "Ibn", "home", "Touch, Pim"));
+        db.createGroup(new Group(0, "Ibn", "school", "Egg, Pim"));
+        db.createGroup(new Group(0, "Ibn", "Gym", "Egg"));
+    }
+
     public void onClickChat(View view) {
 //        final int position = (Integer) v.getTag();
 //        Toast.makeText(v.getContext(), position, Toast.LENGTH_SHORT).show();
-//        Log.d("Ibn", v.getTag() + " " + v.getParent());
+//        Log.d("Ibn", view.getTag() + " " + view.getParent());
         Intent chatActivity = new Intent(view.getContext(), ChatActivity.class);
-        chatActivity.putExtra("SelectedActivity", view.getTag().toString());
+        ArrayList<String> tag = (ArrayList<String>)view.getTag();
+        chatActivity.putExtra("ownerName", tag.get(0));
+        chatActivity.putExtra("activity", tag.get(1));
+        chatActivity.putExtra("imgID", Integer.parseInt(tag.get(2)));
         startActivity(chatActivity);
     }
 
@@ -232,37 +178,14 @@ public class MainActivity extends AppCompatActivity
         } else if (id == R.id.conversions) {
             nextActivity = new Intent(MainActivity.this, AllChatActivity.class);
         } else if (id == 0) {
-            CustomListAdapter adapter = new CustomListAdapter(this, activityNeed_s, imgid);
-            adapter.notifyDataSetChanged();
-            listView = (ListView) findViewById(R.id.activity_need);
-            listView.setAdapter(adapter);
-            tmp_subgroupActivity = 0;
+            updateActivityAndOwnerPic("all");
         } else {
-            ArrayList<Activity> act = new ArrayList<Activity>();
-            activityNeed.clear();
-            try {
-                act.addAll(db.getActivity("home"));
-            } catch (ParseException e) {
-                e.printStackTrace();
-                Log.d("Ibn", "error");
+            for(int i=0;i<allGroups.size();i++){
+                if(id==allGroups.get(i).getID()){
+                    updateActivityAndOwnerPic(allGroups.get(i).getGroupName());
+                    break;
+                }
             }
-            db.closeDB();
-
-            for (int i = 0; i < act.size(); i++) {
-                activityNeed.add(act.get(i).getTitle());
-            }
-
-            activityNeed_s = new String[activityNeed.size()];
-            activityNeed_s = activityNeed.toArray(activityNeed_s);
-
-            CustomListAdapter adapter = new CustomListAdapter(this, activityNeed_s, imgid);
-            adapter.notifyDataSetChanged();
-            listView = (ListView) findViewById(R.id.activity_need);
-            listView.setAdapter(adapter);
-
-            tmp_subgroupActivity = id;
-
-
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -272,6 +195,40 @@ public class MainActivity extends AppCompatActivity
         }
 
         return true;
+    }
+
+    private void updateActivityAndOwnerPic(String group) {
+        db = new LocalStorageAdapter(this.getApplicationContext());
+        ArrayList<Activity> act = new ArrayList<Activity>();
+        activityNeedList.clear();
+        profilePicList.clear();
+        ownerList.clear();
+        String g = group;
+        try {
+            act.addAll(db.getActivity(g));
+        } catch (ParseException e) {
+            e.printStackTrace();
+            Log.d("Ibn", "error");
+        }
+        ArrayList<User> user=new ArrayList<User>();
+        for (int i = 0; i < act.size(); i++) {
+            activityNeedList.add(act.get(i).getTitle());
+            ownerList.add(act.get(i).getOwner());
+            offerOrReqList.add(act.get(i).getRequestOrOffer());
+            user.addAll(db.getUser(ownerList.get(i)));
+
+        }
+        for (int i = 0; i < user.size(); i++) {
+            profilePicList.add(user.get(i).getProfilePic());
+        }
+        db.closeDB();
+
+        CustomListAdapter adapter = new CustomListAdapter(this, activityNeedList, profilePicList, ownerList, offerOrReqList);
+        adapter.notifyDataSetChanged();
+        listView = (ListView) findViewById(R.id.activity_need);
+        listView.setAdapter(adapter);
+        db.closeDB();
+
     }
 
 

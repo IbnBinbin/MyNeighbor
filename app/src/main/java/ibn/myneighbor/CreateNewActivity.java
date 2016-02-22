@@ -14,6 +14,7 @@ import android.util.Log;
 import java.util.*;
 
 import ibn.myneighbor.Model.Activity;
+import ibn.myneighbor.Model.Group;
 
 public class CreateNewActivity extends AppCompatActivity {
 
@@ -100,12 +101,13 @@ public class CreateNewActivity extends AppCompatActivity {
 
         Spinner spinnerGroup = (Spinner) findViewById(R.id.spinnerGroup);
         List<String> list = new ArrayList<String>();
+        LocalStorageAdapter db=new LocalStorageAdapter(this.getApplicationContext());
+        ArrayList<Group> groupArrayList= db.getGroups();
         list.add("all");
-        list.add("home");
-        list.add("family");
-        list.add("school");
-        list.add("gym");
-        list.add("internship");
+        for(int i=0;i< groupArrayList.size();i++){
+            list.add(groupArrayList.get(i).getGroupName());
+        }
+
         ArrayAdapter<String> dataAdapter = new ArrayAdapter<String>(this,
                 android.R.layout.simple_spinner_item, list);
         dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
@@ -132,17 +134,16 @@ public class CreateNewActivity extends AppCompatActivity {
         save.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                //Todo save data
                 EditText title = (EditText) findViewById(R.id.titleText);
                 EditText desc = (EditText) findViewById(R.id.descText);
 
                 LocalStorageAdapter db = new LocalStorageAdapter(view.getContext());
-                Log.d("Ibn","title: "+title.getText().toString()+">>>>");
                 if(title.getText().toString().trim().length()==0){
                     Toast.makeText(getApplicationContext(), "Please put the title", Toast.LENGTH_SHORT).show();
                 }else {
                     Log.d("Ibn", title.getText().toString()+" "+ desc.getText().toString()+" "+ num_req_offer+" "+ group+" "+ d+" "+ "Ibn");
-                    db.createActivity(new Activity(title.getText().toString(), desc.getText().toString(), num_req_offer, group, d, "Ibn"));
+                    long check = db.createActivity(new Activity(title.getText().toString(), desc.getText().toString(), num_req_offer, group, d, "Ibn"));
+                    Log.d("Ibn",check+"");
                     Intent createNewActivity = new Intent(view.getContext(), MainActivity.class);
                     startActivity(createNewActivity);
                 }

@@ -4,6 +4,14 @@
     android:layout_height="fill_parent"
     android:descendantFocusability="blocksDescendants">
 
+    <TextView
+        android:id="@+id/owner"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentLeft="true"
+        android:paddingTop="5dp"
+        android:textSize="10dp" />
     <ImageView
         android:id="@+id/profilePic"
         android:layout_width="80dp"
@@ -11,14 +19,29 @@
         android:contentDescription="user profile"
         android:paddingLeft="10dp"
         android:paddingRight="10dp" />
+        android:paddingTop="5dp" />
+    <TextView
+        android:id="@+id/offerOrRequest"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@+id/profilePic"
+        android:layout_alignParentTop="true"
+        android:paddingTop="10dp"
+        android:paddingLeft="10dp"
+        android:text="said: "
+        android:textSize="10dp" />
 
     <TextView
         android:id="@+id/title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_toRightOf="@+id/profilePic"
+        android:layout_toLeftOf="@+id/chatButton"
+        android:layout_centerHorizontal="true"
+        android:layout_centerVertical="true"
+        android:paddingLeft="10dp"
         android:paddingBottom="10dp"
-        android:textSize="16dp" />
+        android:textSize="20dp" />
 
     <ImageButton
         android:layout_width="80dp"

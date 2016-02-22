@@ -12,8 +12,6 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.ImageButton;
-import android.util.Log;
-import android.widget.Toast;
 
 
 public class ChatListAdapter extends ArrayAdapter<String> {
@@ -23,7 +21,7 @@ public class ChatListAdapter extends ArrayAdapter<String> {
     private final Integer[] imgid;
 
     public ChatListAdapter(Activity context, String[] itemname, Integer[] imgid) {
-        super(context, R.layout.chat_list_even, itemname);
+        super(context, R.layout.chat_list, itemname);
         // TODO Auto-generated constructor stub
 
         this.context = context;
