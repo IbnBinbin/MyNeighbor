@@ -111,9 +111,16 @@ public class MainActivity extends AppCompatActivity
         db.createUser(new User("Egg", "...", R.drawable.bear, "1232"));
         db.createUser(new User("Touch", "...", R.drawable.octopus, "122"));
         db.createUser(new User("Pim", "...", R.drawable.snowman, "333"));
+
         db.createGroup(new Group(0, "Ibn", "home", "Touch, Pim"));
         db.createGroup(new Group(0, "Ibn", "school", "Egg, Pim"));
         db.createGroup(new Group(0, "Ibn", "Gym", "Egg"));
+
+        db.createConversation(new Conversation("Test", "Ibn", "Pim", "Hello"));
+        db.createConversation(new Conversation("Test1", "Touch", "Ibn", "Hello1"));
+        db.createConversation(new Conversation("Test2", "Egg", "Pop", "Hello2"));
+        db.createConversation(new Conversation("Test3", "Touch", "Egg", "Hello3"));
+        db.createConversation(new Conversation("Test4", "Pop", "Ibn", "Hello4"));
     }
 
     public void onClickChat(View view) {

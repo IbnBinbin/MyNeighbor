@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:descendantFocusability="blocksDescendants">
+
+    <ImageView
+        android:id="@+id/profilePic"
+        android:layout_width="80dp"
+        android:layout_height="80dp"
+        android:contentDescription="user profile"
+        android:paddingLeft="10dp"
+        android:paddingRight="10dp" />
+    <TextView
+        android:id="@+id/owner"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:text="Owner: "
+        android:layout_toRightOf="@id/profilePic"
+        android:paddingLeft="10dp"
+        android:paddingTop="10dp"
+        android:textSize="10dp" />
+
+    <TextView
+        android:id="@+id/title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@+id/profilePic"
+        android:layout_toLeftOf="@+id/chatButton"
+        android:layout_centerHorizontal="true"
+        android:layout_centerVertical="true"
+        android:paddingLeft="10dp"
+        android:paddingBottom="10dp"
+        android:textSize="20dp" />
+
+
+</RelativeLayout>

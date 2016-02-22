@@ -51,7 +51,6 @@ public class ProfileActivity extends AppCompatActivity {
         } catch (ParseException e) {
             e.printStackTrace();
         }
-        db.getUser("Ibn");
 
         user=new ArrayList<User>();
         activityNeedList=new ArrayList<String>();

@@ -191,6 +191,19 @@ public class LocalStorageAdapter extends SQLiteOpenHelper {
         return check;
     }
 
+    public long createConversation(Conversation c){
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put(KEY_TOPIC, c.getTopic());
+        values.put(KEY_OWNER, c.getOwner());
+        values.put(KEY_CLIENT, c.getClient());
+        values.put(KEY_CREATED_AT, getDateTime());
+        values.put(KEY_CHAT_MESSAGE,c.getChatMessage());
+        long check = db.insert(TABLE_CONVERSATION, null, values);
+
+        return check;
+    }
+
     public int updateActivity(int id, String title, String desc, int req_offer, String groupName, Date expire, String owner) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues values = new ContentValues();
@@ -296,6 +309,22 @@ public class LocalStorageAdapter extends SQLiteOpenHelper {
 
     }
 
+    public ArrayList<Conversation> getAllConversation(String owner) {
+        ArrayList<Conversation> listAllConversation = new ArrayList<Conversation>();
+        String selectQuery = "SELECT * FROM " + TABLE_CONVERSATION + " WHERE "
+                + KEY_OWNER + " = '" + owner + "'"+" OR "+ KEY_CLIENT + " = '" + owner + "'";
+
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor c = db.rawQuery(selectQuery, null);
+        if (c.moveToFirst()) {
+            do {
+                listAllConversation.add(new Conversation(c.getString(c.getColumnIndex(KEY_TOPIC)), c.getString(c.getColumnIndex(KEY_OWNER)), c.getString(c.getColumnIndex(KEY_CLIENT)), c.getString(c.getColumnIndex(KEY_CHAT_MESSAGE))));
+            } while (c.moveToNext());
+        }
+
+        return listAllConversation;
+    }
+
     // closing database
     public void closeDB() {
         SQLiteDatabase db = this.getReadableDatabase();
@@ -318,4 +347,6 @@ public class LocalStorageAdapter extends SQLiteOpenHelper {
                 "yyyy-MM-dd HH:mm:ss", Locale.getDefault());
         return dateFormat.format(date);
     }
+
+
 }
