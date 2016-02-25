@@ -14,7 +14,6 @@ import java.util.ArrayList;
 import ibn.myneighbor.Model.Conversation;
 import ibn.myneighbor.Model.User;
 
-
 public class ChatActivity extends AppCompatActivity {
 
     private LocalStorageAdapter db;
@@ -48,7 +47,7 @@ public class ChatActivity extends AppCompatActivity {
         send.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Log.d("Ibn","sendddd: "+ textView.getText());
+                Log.d("Ibn", "sendddd: " + textView.getText());
                 String username = getSharedPreferences("PREFERENCE", MODE_PRIVATE).getString("username", "NULL");
                 LocalStorageAdapter db = new LocalStorageAdapter(view.getContext());
                 db.createConversation(new Conversation(activity, username, ownerName, textView.getText().toString()));
@@ -61,15 +60,15 @@ public class ChatActivity extends AppCompatActivity {
 //                detailActivity.putExtra("SelectedActivity", selectedActivity);
                 startActivity(chatActivity);
                 finish();
+                overridePendingTransition(0, 0);
             }
         });
-
 
         db = new LocalStorageAdapter(this.getApplicationContext());
         ArrayList<Conversation> allConversation = new ArrayList<Conversation>();
         ArrayList<User> personalImgID = new ArrayList<User>();
-
-        allConversation = db.getSpecificConversation(ownerName, activity);
+        String username = getSharedPreferences("PREFERENCE", MODE_PRIVATE).getString("username", "NULL");
+        allConversation = db.getSpecificConversation(ownerName, activity, username);
 
 
         user = new ArrayList<User>();
@@ -84,7 +83,7 @@ public class ChatActivity extends AppCompatActivity {
         for (int i = 0; i < user.size(); i++) {
             profilePicList.add(user.get(i).getProfilePic());
         }
-        CustomAllChatList adapter = new CustomAllChatList(this, chatMessageList, profilePicList, ownerList, offerOrReqList);
+        CustomAllChatList adapter = new CustomAllChatList(this, chatMessageList, profilePicList, ownerList, offerOrReqList, false);
         adapter.notifyDataSetChanged();
         listView = (ListView) findViewById(R.id.chat_list);
         listView.setAdapter(adapter);

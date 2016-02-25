@@ -20,8 +20,9 @@ public class CustomAllChatList extends ArrayAdapter<String>{
     private final ArrayList<Integer> imgid;
     private final ArrayList<String> owner;
     private final ArrayList<Integer> offerOrReq;
+    private final boolean isAll;
 
-    public CustomAllChatList(Activity context, ArrayList<String> itemname, ArrayList<Integer> imgid, ArrayList<String> owner, ArrayList<Integer> offerOrReq) {
+    public CustomAllChatList(Activity context, ArrayList<String> itemname, ArrayList<Integer> imgid, ArrayList<String> owner, ArrayList<Integer> offerOrReq, boolean isAll) {
         super(context, R.layout.item_list, itemname);
 
         this.context = context;
@@ -29,6 +30,7 @@ public class CustomAllChatList extends ArrayAdapter<String>{
         this.imgid = imgid;
         this.owner = owner;
         this.offerOrReq=offerOrReq;
+        this.isAll=isAll;
     }
 
     @Override
@@ -40,7 +42,11 @@ public class CustomAllChatList extends ArrayAdapter<String>{
         TextView txtTitle = (TextView) rowView.findViewById(R.id.title);
         ImageView imageView = (ImageView) rowView.findViewById(R.id.profilePic);
 
-        owner.setText(owner.getText()+this.owner.get(position));
+        if(isAll) {
+            owner.setText("Conversation between you and "+this.owner.get(position) + " about");
+        }else{
+            owner.setText(this.owner.get(position) + " said");
+        }
         txtTitle.setText(itemname.get(position));
         imageView.setImageResource(imgid.get(position));
 

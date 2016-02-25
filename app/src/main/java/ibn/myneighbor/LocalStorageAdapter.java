@@ -91,7 +91,7 @@ public class LocalStorageAdapter extends SQLiteOpenHelper {
             + "(" + KEY_ID + " INTEGER PRIMARY KEY AUTOINCREMENT," + KEY_OWNER + " TEXT,"
             + KEY_GROUP_NAME + " TEXT," + KEY_MEMBER + " TEXT" + ")";
 
-    // Activity table create statement
+    // Neighborhood table create statement
     private static final String CREATE_TABLE_NEIGHBORHOOR = "CREATE TABLE " + TABLE_NEIGHBORHOOD
             + "(" + KEY_ID + " INTEGER PRIMARY KEY AUTOINCREMENT," + KEY_INITIAL_POINT + " TEXT," + KEY_FINAL_POINT + " TEXT,"
             + KEY_DRAW_TYPE + " INTEGER," + KEY_OWNER + " TEXT" + ")";
@@ -191,14 +191,14 @@ public class LocalStorageAdapter extends SQLiteOpenHelper {
         return check;
     }
 
-    public long createConversation(Conversation c){
+    public long createConversation(Conversation c) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues values = new ContentValues();
         values.put(KEY_TOPIC, c.getTopic());
         values.put(KEY_OWNER, c.getOwner());
         values.put(KEY_CLIENT, c.getClient());
         values.put(KEY_CREATED_AT, getDateTime());
-        values.put(KEY_CHAT_MESSAGE,c.getChatMessage());
+        values.put(KEY_CHAT_MESSAGE, c.getChatMessage());
         long check = db.insert(TABLE_CONVERSATION, null, values);
         //TODO: add 1 more parameeter to point to the real owner
         return check;
@@ -309,26 +309,54 @@ public class LocalStorageAdapter extends SQLiteOpenHelper {
 
     }
 
-    public ArrayList<Conversation> getAllConversation(String owner) {
+    public ArrayList<Conversation> getAllConversation(String user) {
+        //TODO: now it do like a broadcast ... fix it!!
         ArrayList<Conversation> listAllConversation = new ArrayList<Conversation>();
         String selectQuery = "SELECT * FROM " + TABLE_CONVERSATION + " WHERE "
-                + KEY_OWNER + " = '" + owner + "'"+" OR "+ KEY_CLIENT + " = '" + owner + "' GROUP BY "+KEY_OWNER+", "+KEY_TOPIC;
+                + KEY_CLIENT + " = '" + user + "' OR "+ KEY_OWNER + " = '" + user +"' GROUP BY " + KEY_OWNER + ", " + KEY_TOPIC + " ORDER BY " + KEY_CREATED_AT+" DESC";
 
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor c = db.rawQuery(selectQuery, null);
         if (c.moveToFirst()) {
             do {
-                listAllConversation.add(new Conversation(c.getString(c.getColumnIndex(KEY_TOPIC)), c.getString(c.getColumnIndex(KEY_OWNER)), c.getString(c.getColumnIndex(KEY_CLIENT)), c.getString(c.getColumnIndex(KEY_CHAT_MESSAGE))));
+                if(user.equals(c.getString(c.getColumnIndex(KEY_CLIENT)))){
+                    for (int i = 0; i < listAllConversation.size(); i++) {
+                        if (!(listAllConversation.get(i).getClient().equals(c.getString(c.getColumnIndex(KEY_OWNER)))&&listAllConversation.get(i).getTopic().equals(c.getString(c.getColumnIndex(KEY_TOPIC))))) {
+                            listAllConversation.add(new Conversation(c.getString(c.getColumnIndex(KEY_TOPIC)), c.getString(c.getColumnIndex(KEY_OWNER)), c.getString(c.getColumnIndex(KEY_CLIENT)), c.getString(c.getColumnIndex(KEY_CHAT_MESSAGE))));
+                            break;
+                        }
+                    }
+                }else {
+                    listAllConversation.add(new Conversation(c.getString(c.getColumnIndex(KEY_TOPIC)), c.getString(c.getColumnIndex(KEY_CLIENT)), c.getString(c.getColumnIndex(KEY_OWNER)), c.getString(c.getColumnIndex(KEY_CHAT_MESSAGE))));
+                }
             } while (c.moveToNext());
         }
+
+//        String selectQuery1 = "SELECT * FROM " + TABLE_CONVERSATION + " WHERE "
+//                + KEY_OWNER + " = '" + user + "' GROUP BY " + KEY_OWNER + ", " + KEY_TOPIC + " ORDER BY " + KEY_CREATED_AT+" DESC";
+//
+//        c = db.rawQuery(selectQuery1, null);
+//        if (c.moveToFirst()) {
+//            do {
+//                for (int i = 0; i < listAllConversation.size(); i++) {
+//                    if (!(listAllConversation.get(i).getClient().equals(c.getString(c.getColumnIndex(KEY_OWNER)))&&listAllConversation.get(i).getTopic().equals(c.getString(c.getColumnIndex(KEY_TOPIC))))) {
+//                        listAllConversation.add(new Conversation(c.getString(c.getColumnIndex(KEY_TOPIC)), c.getString(c.getColumnIndex(KEY_CLIENT)), c.getString(c.getColumnIndex(KEY_OWNER)), c.getString(c.getColumnIndex(KEY_CHAT_MESSAGE))));
+//                        break;
+//                    }
+//                }
+//            } while (c.moveToNext());
+//        }
+
+        db.close();
 
         return listAllConversation;
     }
 
-    public ArrayList<Conversation> getSpecificConversation(String owner, String topic) {
+    public ArrayList<Conversation> getSpecificConversation(String owner, String topic, String user) {
+        //TODO: now it do like a broadcast ... fix it!!
         ArrayList<Conversation> listAllConversation = new ArrayList<Conversation>();
         String selectQuery = "SELECT * FROM " + TABLE_CONVERSATION + " WHERE ("
-                + KEY_OWNER + " = '" + owner + "'"+" AND "+ KEY_TOPIC + " = '" + topic + "') OR ("+ KEY_CLIENT + " = '" + owner + "'"+" AND "+ KEY_TOPIC + " = '" + topic + "')";
+                + KEY_OWNER + " = '" + owner + "'" + " AND " + KEY_TOPIC + " = '" + topic + "' AND " + KEY_CLIENT + " = '" + user + "') OR (" + KEY_OWNER + " = '" + user + "'" + " AND " + KEY_TOPIC + " = '" + topic + "' AND " + KEY_CLIENT + " = '" + owner + "')" + " ORDER BY " + KEY_CREATED_AT;
 
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor c = db.rawQuery(selectQuery, null);
@@ -343,7 +371,7 @@ public class LocalStorageAdapter extends SQLiteOpenHelper {
 
     public ArrayList<Neighborhood> getNeighborhood(String username) {
         ArrayList<Neighborhood> nbMarks = new ArrayList<Neighborhood>();
-        String selectQuery = "SELECT * FROM " + TABLE_NEIGHBORHOOD+ " WHERE "
+        String selectQuery = "SELECT * FROM " + TABLE_NEIGHBORHOOD + " WHERE "
                 + KEY_OWNER + " = '" + username + "'";
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor c = db.rawQuery(selectQuery, null);
@@ -379,7 +407,6 @@ public class LocalStorageAdapter extends SQLiteOpenHelper {
                 "yyyy-MM-dd HH:mm:ss", Locale.getDefault());
         return dateFormat.format(date);
     }
-
 
 
 }

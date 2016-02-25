@@ -6,6 +6,7 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
@@ -39,8 +40,8 @@ public class AllChatActivity extends AppCompatActivity {
         db = new LocalStorageAdapter(this.getApplicationContext());
         ArrayList<Conversation> allConversation = new ArrayList<Conversation>();
         ArrayList<User> personalImgID = new ArrayList<User>();
-
-        allConversation = db.getAllConversation("Ibn");
+        String username = getSharedPreferences("PREFERENCE", MODE_PRIVATE).getString("username", "NULL");
+        allConversation = db.getAllConversation(username);
 
 
         user = new ArrayList<User>();
@@ -55,7 +56,7 @@ public class AllChatActivity extends AppCompatActivity {
         for (int i = 0; i < user.size(); i++) {
             profilePicList.add(user.get(i).getProfilePic());
         }
-        CustomAllChatList adapter = new CustomAllChatList(this, activityNeedList, profilePicList, ownerList, offerOrReqList);
+        CustomAllChatList adapter = new CustomAllChatList(this, activityNeedList, profilePicList, ownerList, offerOrReqList, true);
         adapter.notifyDataSetChanged();
         listView = (ListView) findViewById(R.id.allConversation);
         listView.setAdapter(adapter);
@@ -75,10 +76,19 @@ public class AllChatActivity extends AppCompatActivity {
                 detailActivity.putExtra("imgID", Integer.parseInt(tag.get(2)));
 //                detailActivity.putExtra("SelectedActivity", selectedActivity);
                 startActivity(detailActivity);
-                finish();
+//                finish();
             }
 
         });
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                finish();
+        }
+        return true;
     }
 
 }
