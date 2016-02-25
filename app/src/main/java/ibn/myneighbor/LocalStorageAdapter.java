@@ -310,24 +310,44 @@ public class LocalStorageAdapter extends SQLiteOpenHelper {
     }
 
     public ArrayList<Conversation> getAllConversation(String user) {
-        //TODO: now it do like a broadcast ... fix it!!
         ArrayList<Conversation> listAllConversation = new ArrayList<Conversation>();
         String selectQuery = "SELECT * FROM " + TABLE_CONVERSATION + " WHERE "
                 + KEY_CLIENT + " = '" + user + "' OR "+ KEY_OWNER + " = '" + user +"' GROUP BY " + KEY_OWNER + ", " + KEY_TOPIC + " ORDER BY " + KEY_CREATED_AT+" DESC";
-
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor c = db.rawQuery(selectQuery, null);
         if (c.moveToFirst()) {
+            Log.d("Ibn","query");
             do {
                 if(user.equals(c.getString(c.getColumnIndex(KEY_CLIENT)))){
-                    for (int i = 0; i < listAllConversation.size(); i++) {
-                        if (!(listAllConversation.get(i).getClient().equals(c.getString(c.getColumnIndex(KEY_OWNER)))&&listAllConversation.get(i).getTopic().equals(c.getString(c.getColumnIndex(KEY_TOPIC))))) {
-                            listAllConversation.add(new Conversation(c.getString(c.getColumnIndex(KEY_TOPIC)), c.getString(c.getColumnIndex(KEY_OWNER)), c.getString(c.getColumnIndex(KEY_CLIENT)), c.getString(c.getColumnIndex(KEY_CHAT_MESSAGE))));
-                            break;
+                    Log.d("Ibn","Client");
+                    if(listAllConversation.size()>0){
+                        for (int i = 0; i < listAllConversation.size(); i++) {
+                            Log.d("Ibn", i + ": "+c.getString(c.getColumnIndex(KEY_TOPIC)));
+                            if (!(listAllConversation.get(i).getClient().equals(c.getString(c.getColumnIndex(KEY_CLIENT))) && listAllConversation.get(i).getTopic().equals(c.getString(c.getColumnIndex(KEY_TOPIC))))) {
+                                listAllConversation.add(new Conversation(c.getString(c.getColumnIndex(KEY_TOPIC)), c.getString(c.getColumnIndex(KEY_OWNER)), c.getString(c.getColumnIndex(KEY_CLIENT)), c.getString(c.getColumnIndex(KEY_CHAT_MESSAGE))));
+                                break;
+                            }
                         }
+                    }else{
+                        Log.d("Ibn", ""+c.getString(c.getColumnIndex(KEY_TOPIC)));
+                        listAllConversation.add(new Conversation(c.getString(c.getColumnIndex(KEY_TOPIC)), c.getString(c.getColumnIndex(KEY_OWNER)), c.getString(c.getColumnIndex(KEY_CLIENT)), c.getString(c.getColumnIndex(KEY_CHAT_MESSAGE))));
                     }
                 }else {
-                    listAllConversation.add(new Conversation(c.getString(c.getColumnIndex(KEY_TOPIC)), c.getString(c.getColumnIndex(KEY_CLIENT)), c.getString(c.getColumnIndex(KEY_OWNER)), c.getString(c.getColumnIndex(KEY_CHAT_MESSAGE))));
+                    Log.d("Ibn","Owner");
+                    if(listAllConversation.size()>0){
+                        for (int i = 0; i < listAllConversation.size(); i++) {
+                            Log.d("Ibn", i + ": "+c.getString(c.getColumnIndex(KEY_TOPIC)));
+                            if (!(listAllConversation.get(i).getOwner().equals(c.getString(c.getColumnIndex(KEY_OWNER))) && listAllConversation.get(i).getTopic().equals(c.getString(c.getColumnIndex(KEY_TOPIC))))) {
+
+//                                if (listAllConversation.get(i).getClient().equals(c.getString(c.getColumnIndex(KEY_OWNER))) && listAllConversation.get(i).getTopic().equals(c.getString(c.getColumnIndex(KEY_TOPIC)))) {
+                                listAllConversation.add(new Conversation(c.getString(c.getColumnIndex(KEY_TOPIC)), c.getString(c.getColumnIndex(KEY_CLIENT)), c.getString(c.getColumnIndex(KEY_OWNER)), c.getString(c.getColumnIndex(KEY_CHAT_MESSAGE))));
+                                break;
+                            }
+                        }
+                    }else{
+                        Log.d("Ibn", ""+c.getString(c.getColumnIndex(KEY_TOPIC)));
+                        listAllConversation.add(new Conversation(c.getString(c.getColumnIndex(KEY_TOPIC)), c.getString(c.getColumnIndex(KEY_CLIENT)), c.getString(c.getColumnIndex(KEY_OWNER)), c.getString(c.getColumnIndex(KEY_CHAT_MESSAGE))));
+                    }
                 }
             } while (c.moveToNext());
         }
