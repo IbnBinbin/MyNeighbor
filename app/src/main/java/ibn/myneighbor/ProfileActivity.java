@@ -46,8 +46,9 @@ public class ProfileActivity extends AppCompatActivity {
         db = new LocalStorageAdapter(this.getApplicationContext());
         ArrayList<Activity> personalActivity=new ArrayList<Activity>();
         ArrayList<User> personalImgID=new ArrayList<User>();
+        String username = getSharedPreferences("PREFERENCE", MODE_PRIVATE).getString("username", "NULL");
         try {
-            personalActivity=db.getPersonalActivity("Ibn");
+            personalActivity=db.getPersonalActivity(username);
         } catch (ParseException e) {
             e.printStackTrace();
         }
@@ -107,7 +108,10 @@ public class ProfileActivity extends AppCompatActivity {
 //        Toast.makeText(v.getContext(), position, Toast.LENGTH_SHORT).show();
 //        Log.d("Ibn", v.getTag() + " " + v.getParent());
         Intent chatActivity = new Intent(view.getContext(), ChatActivity.class);
-        chatActivity.putExtra("SelectedActivity", view.getTag().toString());
+        ArrayList<String> tag = (ArrayList<String>) view.getTag();
+        chatActivity.putExtra("ownerName", tag.get(0));
+        chatActivity.putExtra("activity", tag.get(1));
+        chatActivity.putExtra("imgID", Integer.parseInt(tag.get(2)));
         startActivity(chatActivity);
     }
 }

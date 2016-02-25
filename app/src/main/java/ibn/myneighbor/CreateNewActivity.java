@@ -80,8 +80,9 @@ public class CreateNewActivity extends AppCompatActivity {
         cancel.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent createNewActivity = new Intent(view.getContext(), MainActivity.class);
-                startActivity(createNewActivity);
+//                Intent createNewActivity = new Intent(view.getContext(), MainActivity.class);
+//                startActivity(createNewActivity);
+                finish();
             }
         });
 
@@ -136,16 +137,17 @@ public class CreateNewActivity extends AppCompatActivity {
             public void onClick(View view) {
                 EditText title = (EditText) findViewById(R.id.titleText);
                 EditText desc = (EditText) findViewById(R.id.descText);
-
+                String username = getSharedPreferences("PREFERENCE", MODE_PRIVATE).getString("username", "NULL");
                 LocalStorageAdapter db = new LocalStorageAdapter(view.getContext());
                 if(title.getText().toString().trim().length()==0){
                     Toast.makeText(getApplicationContext(), "Please put the title", Toast.LENGTH_SHORT).show();
                 }else {
-                    Log.d("Ibn", title.getText().toString()+" "+ desc.getText().toString()+" "+ num_req_offer+" "+ group+" "+ d+" "+ "Ibn");
-                    long check = db.createActivity(new Activity(title.getText().toString(), desc.getText().toString(), num_req_offer, group, d, "Ibn"));
+                    Log.d("Ibn", title.getText().toString()+" "+ desc.getText().toString()+" "+ num_req_offer+" "+ group+" "+ d+" "+ username);
+                    long check = db.createActivity(new Activity(title.getText().toString(), desc.getText().toString(), num_req_offer, group, d, username));
                     Log.d("Ibn",check+"");
-                    Intent createNewActivity = new Intent(view.getContext(), MainActivity.class);
-                    startActivity(createNewActivity);
+//                    Intent createNewActivity = new Intent(view.getContext(), MainActivity.class);
+//                    startActivity(createNewActivity);
+                    finish();
                 }
                 db.closeDB();
             }

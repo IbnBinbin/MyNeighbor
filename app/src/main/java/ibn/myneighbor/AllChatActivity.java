@@ -75,6 +75,7 @@ public class AllChatActivity extends AppCompatActivity {
                 detailActivity.putExtra("imgID", Integer.parseInt(tag.get(2)));
 //                detailActivity.putExtra("SelectedActivity", selectedActivity);
                 startActivity(detailActivity);
+                finish();
             }
 
         });

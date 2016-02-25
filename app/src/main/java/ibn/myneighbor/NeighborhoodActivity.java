@@ -83,8 +83,9 @@ public class NeighborhoodActivity extends FragmentActivity implements OnMapReady
         cancel.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent createNewActivity = new Intent(view.getContext(), MainActivity.class);
-                startActivity(createNewActivity);
+//                Intent createNewActivity = new Intent(view.getContext(), MainActivity.class);
+//                startActivity(createNewActivity);
+                finish();
             }
         });
 
@@ -97,8 +98,9 @@ public class NeighborhoodActivity extends FragmentActivity implements OnMapReady
                     db.createNeighborhood(allLatLng.get(i)[0], allLatLng.get(i)[1], Integer.parseInt(allLatLng.get(i)[2]), "Ibn");
                 }
                 db.closeDB();
-                Intent createNewActivity = new Intent(view.getContext(), MainActivity.class);
-                startActivity(createNewActivity);
+//                Intent createNewActivity = new Intent(view.getContext(), MainActivity.class);
+//                startActivity(createNewActivity);
+                finish();
 
             }
         });

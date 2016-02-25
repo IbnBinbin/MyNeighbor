@@ -33,13 +33,12 @@ public class MainActivity extends AppCompatActivity
     private String accountOwner = "Ibn";
     private LocalStorageAdapter db;
     private ArrayList<Group> allGroups;
+    private String username;
 //    private ImageButton chat;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-//        db=new LocalStorageAdapter(this.getApplicationContext());
-//        assignInitialData(db);
-//        db.close();
+//
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
@@ -66,15 +65,28 @@ public class MainActivity extends AppCompatActivity
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
+        Boolean isFirstRun = getSharedPreferences("PREFERENCE", MODE_PRIVATE).getBoolean("firstRun", true);
+
+        if (isFirstRun) {
+            db = new LocalStorageAdapter(this.getApplicationContext());
+            assignInitialData(db);
+            db.close();
+            getSharedPreferences("PREFERENCE", MODE_PRIVATE).edit().putBoolean("firstRun", false).commit();
+
+            Intent createNewActivity = new Intent(this.getApplicationContext(), Login.class);
+            startActivity(createNewActivity);
+            finish();
+        }
+        username = getSharedPreferences("PREFERENCE", MODE_PRIVATE).getString("username", "NULL");
 
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                    selectedActivity = activityNeedList.get(+position);
+                selectedActivity = activityNeedList.get(+position);
 
 //                Toast.makeText(getApplicationContext(), SlectedActivity, Toast.LENGTH_SHORT).show();
                 Intent detailActivity = new Intent(view.getContext(), DetailActivity.class);
-                ArrayList<String> tag = (ArrayList<String>)view.getTag();
+                ArrayList<String> tag = (ArrayList<String>) view.getTag();
                 detailActivity.putExtra("ownerName", tag.get(0));
                 detailActivity.putExtra("activity", tag.get(1));
                 detailActivity.putExtra("imgID", Integer.parseInt(tag.get(2)));
@@ -88,7 +100,7 @@ public class MainActivity extends AppCompatActivity
         Menu m = navView.getMenu();
         SubMenu subGroup = m.addSubMenu("Groups");
         subGroup.add(0, 0, 0, "All");
-        allGroups=db.getGroups();
+        allGroups = db.getGroups();
         for (int i = 0; i < allGroups.size(); i++) {
             subGroup.add(0, allGroups.get(i).getID(), i + 1, allGroups.get(i).getGroupName()); //group_id, item_id, order
         }
@@ -128,7 +140,7 @@ public class MainActivity extends AppCompatActivity
 //        Toast.makeText(v.getContext(), position, Toast.LENGTH_SHORT).show();
 //        Log.d("Ibn", view.getTag() + " " + view.getParent());
         Intent chatActivity = new Intent(view.getContext(), ChatActivity.class);
-        ArrayList<String> tag = (ArrayList<String>)view.getTag();
+        ArrayList<String> tag = (ArrayList<String>) view.getTag();
         chatActivity.putExtra("ownerName", tag.get(0));
         chatActivity.putExtra("activity", tag.get(1));
         chatActivity.putExtra("imgID", Integer.parseInt(tag.get(2)));
@@ -187,8 +199,8 @@ public class MainActivity extends AppCompatActivity
         } else if (id == 0) {
             updateActivityAndOwnerPic("all");
         } else {
-            for(int i=0;i<allGroups.size();i++){
-                if(id==allGroups.get(i).getID()){
+            for (int i = 0; i < allGroups.size(); i++) {
+                if (id == allGroups.get(i).getID()) {
                     updateActivityAndOwnerPic(allGroups.get(i).getGroupName());
                     break;
                 }
@@ -217,7 +229,7 @@ public class MainActivity extends AppCompatActivity
             e.printStackTrace();
             Log.d("Ibn", "error");
         }
-        ArrayList<User> user=new ArrayList<User>();
+        ArrayList<User> user = new ArrayList<User>();
         for (int i = 0; i < act.size(); i++) {
             activityNeedList.add(act.get(i).getTitle());
             ownerList.add(act.get(i).getOwner());

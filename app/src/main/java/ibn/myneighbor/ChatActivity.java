@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.*;
 import android.util.Log;
@@ -29,25 +30,28 @@ public class ChatActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_chat);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         Bundle bundle=getIntent().getExtras();
         final String ownerName=bundle.getString("ownerName");
         final String activity=bundle.getString("activity");
         final int imgID=bundle.getInt("imgID");
+
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        toolbar.setTitle(ownerName + ": " + activity);
+        setSupportActionBar(toolbar);
+
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
         final TextView textView = (TextView) findViewById(R.id.chatText);
-        textView.setText(ownerName+": "+activity);
 
         Button send = (Button) findViewById(R.id.sendButton);
         send.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Log.d("Ibn","sendddd: "+ textView.getText());
+                String username = getSharedPreferences("PREFERENCE", MODE_PRIVATE).getString("username", "NULL");
                 LocalStorageAdapter db = new LocalStorageAdapter(view.getContext());
-                db.createConversation(new Conversation(activity, "Ibn", ownerName, textView.getText().toString()));
+                db.createConversation(new Conversation(activity, username, ownerName, textView.getText().toString()));
                 db.closeDB();
                 Intent chatActivity = new Intent(view.getContext(), ChatActivity.class);
                 ArrayList<String> tag = (ArrayList<String>) view.getTag();
@@ -56,6 +60,7 @@ public class ChatActivity extends AppCompatActivity {
                 chatActivity.putExtra("imgID", imgID);
 //                detailActivity.putExtra("SelectedActivity", selectedActivity);
                 startActivity(chatActivity);
+                finish();
             }
         });
 
@@ -83,6 +88,15 @@ public class ChatActivity extends AppCompatActivity {
         adapter.notifyDataSetChanged();
         listView = (ListView) findViewById(R.id.chat_list);
         listView.setAdapter(adapter);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                finish();
+        }
+        return true;
     }
 
 }

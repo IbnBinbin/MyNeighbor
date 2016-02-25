@@ -37,8 +37,9 @@ public class CreateNewGroupActivity extends AppCompatActivity {
         cancel.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent createNewActivity = new Intent(view.getContext(), MainActivity.class);
-                startActivity(createNewActivity);
+//                Intent createNewActivity = new Intent(view.getContext(), MainActivity.class);
+//                startActivity(createNewActivity);
+                finish();
             }
         });
 
@@ -47,14 +48,15 @@ public class CreateNewGroupActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 EditText groupName = (EditText) findViewById(R.id.groupNameText);
-
+                String username = getSharedPreferences("PREFERENCE", MODE_PRIVATE).getString("username", "NULL");
                 LocalStorageAdapter db = new LocalStorageAdapter(view.getContext());
                 if(groupName.getText().toString().trim().length()==0){
                     Toast.makeText(getApplicationContext(), "Please put the group name", Toast.LENGTH_SHORT).show();
                 }else {
-                    db.createGroup(new Group(0, "Ibn", groupName.getText().toString(), ""));
-                    Intent createNewActivity = new Intent(view.getContext(), MainActivity.class);
-                    startActivity(createNewActivity);
+                    db.createGroup(new Group(0, username, groupName.getText().toString(), ""));
+//                    Intent createNewActivity = new Intent(view.getContext(), MainActivity.class);
+//                    startActivity(createNewActivity);
+                    finish();
                 }
                 db.closeDB();
             }

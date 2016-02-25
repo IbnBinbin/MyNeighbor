@@ -9,7 +9,6 @@
     -->
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
 
-
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
@@ -71,6 +70,7 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="ibn.myneighbor.MainActivity" />
         </activity>
+
         <meta-data
             android:name="com.google.android.geo.API_KEY"
             android:value="@string/google_maps_api_key" />
@@ -85,6 +85,15 @@
         <activity
             android:name=".AllChatActivity"
             android:label="@string/title_activity_all_chat"
+            android:parentActivityName=".MainActivity"
+            android:theme="@style/AppTheme.NoActionBar" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="ibn.myneighbor.MainActivity" />
+        </activity>
+        <activity
+            android:name=".Login"
+            android:label="@string/title_activity_login"
             android:parentActivityName=".MainActivity"
             android:theme="@style/AppTheme.NoActionBar" >
             <meta-data
