@@ -53,6 +53,7 @@ public class MainActivity extends AppCompatActivity
             public void onClick(View view) {
                 Intent createNewActivity = new Intent(view.getContext(), CreateNewActivity.class);
                 startActivity(createNewActivity);
+                finish();
             }
         });
 

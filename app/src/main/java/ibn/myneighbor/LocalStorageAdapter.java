@@ -146,6 +146,7 @@ public class LocalStorageAdapter extends SQLiteOpenHelper {
         values.put(KEY_CREATED_AT, getDateTime());
         values.put(KEY_UPDATED_AT, getDateTime());
         long check = db.insert(TABLE_USER, null, values);
+        u.setID((int)check);
         cloudDB = MyApp.getDBcloud();
         if (isFromLocal) {
             cloudDB.createUser(u);
@@ -219,7 +220,7 @@ public class LocalStorageAdapter extends SQLiteOpenHelper {
         values.put(KEY_CREATED_AT, getDateTime());
         values.put(KEY_CHAT_MESSAGE, c.getChatMessage());
         long check = db.insert(TABLE_CONVERSATION, null, values);
-        c.setID((int)check);
+        c.setID((int) check);
         cloudDB = MyApp.getDBcloud();
         if (isFromLocal) {
             cloudDB.createConversation(c);
@@ -233,7 +234,14 @@ public class LocalStorageAdapter extends SQLiteOpenHelper {
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor c = db.rawQuery(selectQuery, null);
         int isRowExist = 1;
-        if (!c.moveToFirst()) {
+        if (c.moveToFirst()) {
+            do {
+                Log.d("Ibn...", c.getInt(c.getColumnIndex(KEY_ID)) + " " + c.getString(c.getColumnIndex(KEY_TITLE)));
+            } while (c.moveToNext());
+//            createActivity(a, false);
+//            isRowExist = 0;
+        }else{
+            Log.d("Ibn...", c.getCount()+"");
             createActivity(a, false);
             isRowExist = 0;
         }

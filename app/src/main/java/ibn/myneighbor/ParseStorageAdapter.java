@@ -196,6 +196,7 @@ public class ParseStorageAdapter extends Application {
                     for (int i = 0; i < objects.size(); i++) {
                         ParseObject c = objects.get(i);
                         boolean check = listObject.add(new Activity(c.getString("TITLE"), c.getString("DESCRIPTION"), c.getInt("REQUEST_OR_OFFER"), c.getString("GROUP_NAME"), c.getDate("EXPIRT_DATE"), c.getDate("CREATED_AT"), c.getString("OWNER")));
+                        listObject.get(i).setID(c.getInt("ID"));
                         Log.d("Ibn", i + " " + check + " " + listObject.size());
                     }
                     for (int i = 0; i < listObject.size(); i++) {
@@ -232,6 +233,7 @@ public class ParseStorageAdapter extends Application {
                     for (int i = 0; i < objects.size(); i++) {
                         ParseObject c = objects.get(i);
                         listObject.add(new User(c.getString("USERNAME"), c.getString("BIO"), c.getInt("PROFILE_PIC_ID"), c.getString("PASSWORD")));
+                        listObject.get(i).setID(c.getInt("ID"));
                     }
                     for (int i = 0; i < listObject.size(); i++) {
                         LocalStorageAdapter db = new LocalStorageAdapter();
@@ -265,7 +267,8 @@ public class ParseStorageAdapter extends Application {
                     // your logic here
                     for (int i = 0; i < objects.size(); i++) {
                         ParseObject c = objects.get(i);
-                        listObject.add(new Conversation(c.getString("TOPIC"), c.getString("OWNER"), c.getString("CLIENT"), c.getString("MESSAGE")));
+                        listObject.add(new Conversation(c.getString("TOPIC"), c.getString("OWNER"), c.getString("CLIENT"), c.getString("CHAT_MESSAGE")));
+                        listObject.get(i).setID(c.getInt("ID"));
                     }
                     for (int i = 0; i < listObject.size(); i++) {
                         LocalStorageAdapter db = new LocalStorageAdapter();
@@ -300,6 +303,7 @@ public class ParseStorageAdapter extends Application {
                     for (int i = 0; i < objects.size(); i++) {
                         ParseObject c = objects.get(i);
                         listObject.add(new Neighborhood(c.getString("POINT"), c.getString("FINAL_POINT"), Integer.parseInt(c.getString("DRAW_TYPE")), c.getString("OWNER")));
+                        listObject.get(i).setID(c.getInt("ID"));
                     }
                     for (int i = 0; i < listObject.size(); i++) {
                         LocalStorageAdapter db = new LocalStorageAdapter();

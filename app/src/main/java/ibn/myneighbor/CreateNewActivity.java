@@ -145,9 +145,9 @@ public class CreateNewActivity extends AppCompatActivity {
                     Log.d("Ibn", title.getText().toString()+" "+ desc.getText().toString()+" "+ num_req_offer+" "+ group+" "+ d+" "+ username);
                     long check = db.createActivity(new Activity(title.getText().toString(), desc.getText().toString(), num_req_offer, group, d, null, username), true);
                     Log.d("Ibn",check+"");
-//                    Intent createNewActivity = new Intent(view.getContext(), MainActivity.class);
-//                    startActivity(createNewActivity);
-                    finish();
+                    Intent createNewActivity = new Intent(view.getContext(), MainActivity.class);
+                    startActivity(createNewActivity);
+//                    finish();
                 }
                 db.closeDB();
             }
