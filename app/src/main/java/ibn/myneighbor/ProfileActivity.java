@@ -28,6 +28,7 @@ public class ProfileActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        MyApp.initOnBroadCastReceiver(this);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_profile);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -42,8 +43,7 @@ public class ProfileActivity extends AppCompatActivity {
             }
         });
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-
-        db = new LocalStorageAdapter(this.getApplicationContext());
+        db = new LocalStorageAdapter();
         ArrayList<Activity> personalActivity=new ArrayList<Activity>();
         ArrayList<User> personalImgID=new ArrayList<User>();
         String username = getSharedPreferences("PREFERENCE", MODE_PRIVATE).getString("username", "NULL");

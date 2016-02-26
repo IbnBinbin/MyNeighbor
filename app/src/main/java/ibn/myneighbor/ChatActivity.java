@@ -8,7 +8,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.*;
 import android.util.Log;
-
 import java.util.ArrayList;
 
 import ibn.myneighbor.Model.Conversation;
@@ -27,6 +26,7 @@ public class ChatActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        MyApp.initOnBroadCastReceiver(this);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_chat);
 
@@ -49,8 +49,8 @@ public class ChatActivity extends AppCompatActivity {
             public void onClick(View view) {
                 Log.d("Ibn", "sendddd: " + textView.getText());
                 String username = getSharedPreferences("PREFERENCE", MODE_PRIVATE).getString("username", "NULL");
-                LocalStorageAdapter db = new LocalStorageAdapter(view.getContext());
-                db.createConversation(new Conversation(activity, username, ownerName, textView.getText().toString()));
+                LocalStorageAdapter db = new LocalStorageAdapter();
+                db.createConversation(new Conversation(activity, username, ownerName, textView.getText().toString()), true);
                 db.closeDB();
                 Intent chatActivity = new Intent(view.getContext(), ChatActivity.class);
                 ArrayList<String> tag = (ArrayList<String>) view.getTag();
@@ -64,7 +64,7 @@ public class ChatActivity extends AppCompatActivity {
             }
         });
 
-        db = new LocalStorageAdapter(this.getApplicationContext());
+        db = new LocalStorageAdapter();
         ArrayList<Conversation> allConversation = new ArrayList<Conversation>();
         ArrayList<User> personalImgID = new ArrayList<User>();
         String username = getSharedPreferences("PREFERENCE", MODE_PRIVATE).getString("username", "NULL");

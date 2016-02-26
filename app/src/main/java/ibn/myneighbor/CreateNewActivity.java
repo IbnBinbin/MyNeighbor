@@ -10,7 +10,6 @@ import android.view.View;
 import android.widget.*;
 import android.app.DatePickerDialog;
 import android.util.Log;
-
 import java.util.*;
 
 import ibn.myneighbor.Model.Activity;
@@ -32,6 +31,7 @@ public class CreateNewActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        MyApp.initOnBroadCastReceiver(this);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_create_new);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -51,7 +51,7 @@ public class CreateNewActivity extends AppCompatActivity {
         month = cal.get(Calendar.MONTH);
         year = cal.get(Calendar.YEAR);
         et = (EditText) findViewById(R.id.editText);
-        et.setText(day+"/"+month+"/"+year);
+        et.setText(day + "/" + month + "/" + year);
         ib.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -102,7 +102,7 @@ public class CreateNewActivity extends AppCompatActivity {
 
         Spinner spinnerGroup = (Spinner) findViewById(R.id.spinnerGroup);
         List<String> list = new ArrayList<String>();
-        LocalStorageAdapter db=new LocalStorageAdapter(this.getApplicationContext());
+        LocalStorageAdapter db=new LocalStorageAdapter();
         ArrayList<Group> groupArrayList= db.getGroups();
         list.add("all");
         for(int i=0;i< groupArrayList.size();i++){
@@ -138,12 +138,12 @@ public class CreateNewActivity extends AppCompatActivity {
                 EditText title = (EditText) findViewById(R.id.titleText);
                 EditText desc = (EditText) findViewById(R.id.descText);
                 String username = getSharedPreferences("PREFERENCE", MODE_PRIVATE).getString("username", "NULL");
-                LocalStorageAdapter db = new LocalStorageAdapter(view.getContext());
+                LocalStorageAdapter db = new LocalStorageAdapter();
                 if(title.getText().toString().trim().length()==0){
                     Toast.makeText(getApplicationContext(), "Please put the title", Toast.LENGTH_SHORT).show();
                 }else {
                     Log.d("Ibn", title.getText().toString()+" "+ desc.getText().toString()+" "+ num_req_offer+" "+ group+" "+ d+" "+ username);
-                    long check = db.createActivity(new Activity(title.getText().toString(), desc.getText().toString(), num_req_offer, group, d, username));
+                    long check = db.createActivity(new Activity(title.getText().toString(), desc.getText().toString(), num_req_offer, group, d, null, username), true);
                     Log.d("Ibn",check+"");
 //                    Intent createNewActivity = new Intent(view.getContext(), MainActivity.class);
 //                    startActivity(createNewActivity);

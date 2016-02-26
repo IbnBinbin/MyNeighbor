@@ -1,7 +1,6 @@
 package ibn.myneighbor;
 
 import android.content.ContentValues;
-import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
@@ -10,22 +9,18 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 import java.util.Locale;
 
 import ibn.myneighbor.Model.*;
 
-import org.joda.time.LocalTime;
-
 import android.util.Log;
-
-import java.text.SimpleDateFormat;
-
 /**
  * Created by ttnok on 21/2/2559.
  */
 
 public class LocalStorageAdapter extends SQLiteOpenHelper {
+    //    private  Context context;
+    private ParseStorageAdapter cloudDB;
 
     // Logcat tag
     private static final String LOG = "Ibn";//LocalStorageAdapter.class.getName();
@@ -97,13 +92,13 @@ public class LocalStorageAdapter extends SQLiteOpenHelper {
             + KEY_DRAW_TYPE + " INTEGER," + KEY_OWNER + " TEXT" + ")";
 
 
-    public LocalStorageAdapter(Context context) {
-        super(context, DATABASE_NAME, null, DATABASE_VERSION);
+    public LocalStorageAdapter() {
+        super(MyApp.getAppContext(), DATABASE_NAME, null, DATABASE_VERSION);
+        Log.d("Ibn", "app context: " + MyApp.getAppContext().getPackageName());
     }
 
     @Override
     public void onCreate(SQLiteDatabase db) {
-
         // creating required tables
         db.execSQL(CREATE_TABLE_CONVERSATION);
         db.execSQL(CREATE_TABLE_USER);
@@ -131,9 +126,16 @@ public class LocalStorageAdapter extends SQLiteOpenHelper {
         db.delete(TABLE_ACTIVITY, null, null);
         db.delete(TABLE_GROUP, null, null);
         db.delete(TABLE_NEIGHBORHOOD, null, null);
+
+        cloudDB = MyApp.getDBcloud();
+        cloudDB.deleteAllData("User");
+        cloudDB.deleteAllData("Conversation");
+        cloudDB.deleteAllData("Activity");
+        cloudDB.deleteAllData("Group");
+        cloudDB.deleteAllData("Neighborhood");
     }
 
-    public long createUser(User u) {
+    public long createUser(User u, boolean isFromLocal) {
 
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues values = new ContentValues();
@@ -144,15 +146,20 @@ public class LocalStorageAdapter extends SQLiteOpenHelper {
         values.put(KEY_CREATED_AT, getDateTime());
         values.put(KEY_UPDATED_AT, getDateTime());
         long check = db.insert(TABLE_USER, null, values);
-
+        cloudDB = MyApp.getDBcloud();
+        if (isFromLocal) {
+            cloudDB.createUser(u);
+        }
         return check;
     }
 
+
     //    public long createActivity(String title, String desc, int req_offer, String groupName, Date expire, String owner) {
-    public long createActivity(Activity a) {
+    public long createActivity(Activity a, boolean isFromLocal) {
 
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues values = new ContentValues();
+
         values.put(KEY_TITLE, a.getTitle());
         values.put(KEY_DESCRIPTION, a.getDescription());
         values.put(KEY_REQUEST_OR_OFFER, a.getRequestOrOffer());
@@ -162,11 +169,15 @@ public class LocalStorageAdapter extends SQLiteOpenHelper {
         values.put(KEY_UPDATED_AT, getDateTime());
         values.put(KEY_OWNER, a.getOwner());
         long check = db.insert(TABLE_ACTIVITY, null, values);
-
+        a.setID((int)check);
+        cloudDB = MyApp.getDBcloud();
+        if (isFromLocal) {
+            cloudDB.createActivity(a);
+        }
         return check;
     }
 
-    public long createGroup(Group g) {
+    public long createGroup(Group g, boolean isFromLocal) {
 
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues values = new ContentValues();
@@ -174,24 +185,32 @@ public class LocalStorageAdapter extends SQLiteOpenHelper {
         values.put(KEY_GROUP_NAME, g.getGroupName());
         values.put(KEY_MEMBER, g.getMember());
         long check = db.insert(TABLE_GROUP, null, values);
-
+        g.setID((int)check);
+        cloudDB = MyApp.getDBcloud();
+        if (isFromLocal) {
+            cloudDB.createGroup(g);
+        }
         return check;
     }
 
-    public long createNeighborhood(String init, String finalP, int drawType, String owner) {
+    public long createNeighborhood(Neighborhood n, boolean isFromLocal) {
 
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues values = new ContentValues();
-        values.put(KEY_INITIAL_POINT, init);
-        values.put(KEY_FINAL_POINT, finalP);
-        values.put(KEY_DRAW_TYPE, drawType);
-        values.put(KEY_OWNER, owner);
+        values.put(KEY_INITIAL_POINT, n.getInitialPoint());
+        values.put(KEY_FINAL_POINT, n.getFinalPoint());
+        values.put(KEY_DRAW_TYPE, n.getDrawType());
+        values.put(KEY_OWNER, n.getOwner());
         long check = db.insert(TABLE_NEIGHBORHOOD, null, values);
-
+        n.setID((int) check);
+        cloudDB = MyApp.getDBcloud();
+        if (isFromLocal) {
+            cloudDB.createNeighborhood(n);
+        }
         return check;
     }
 
-    public long createConversation(Conversation c) {
+    public long createConversation(Conversation c, boolean isFromLocal) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues values = new ContentValues();
         values.put(KEY_TOPIC, c.getTopic());
@@ -200,37 +219,105 @@ public class LocalStorageAdapter extends SQLiteOpenHelper {
         values.put(KEY_CREATED_AT, getDateTime());
         values.put(KEY_CHAT_MESSAGE, c.getChatMessage());
         long check = db.insert(TABLE_CONVERSATION, null, values);
-        //TODO: add 1 more parameeter to point to the real owner
+        c.setID((int)check);
+        cloudDB = MyApp.getDBcloud();
+        if (isFromLocal) {
+            cloudDB.createConversation(c);
+        }
         return check;
     }
 
-    public int updateActivity(int id, String title, String desc, int req_offer, String groupName, Date expire, String owner) {
-        SQLiteDatabase db = this.getWritableDatabase();
-        ContentValues values = new ContentValues();
-        values.put(KEY_TITLE, title);
-        values.put(KEY_DESCRIPTION, desc);
-        values.put(KEY_REQUEST_OR_OFFER, req_offer);
-        values.put(KEY_GROUP_NAME, groupName);
-        values.put(KEY_EXPIRT_DATE, getDateTime(expire));
-        values.put(KEY_UPDATED_AT, getDateTime());
-        values.put(KEY_OWNER, owner);
-//        Log.d("Nok", "update task: "+values.valueSet());
-        return db.update(TABLE_ACTIVITY, values, KEY_ID + "=?", new String[]{String.valueOf(id)});
+    public int checkActivityExistOnLocalDB(Activity a) { //check if exist or not
+        String selectQuery;
+        selectQuery = "SELECT * FROM " + TABLE_ACTIVITY +" WHERE "+KEY_TITLE+"= '"+a.getTitle()+"' and "+KEY_ID+ " = "+a.getID()+" AND "+KEY_OWNER+" = '"+a.getOwner()+"'";
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor c = db.rawQuery(selectQuery, null);
+        int isRowExist = 1;
+        if (!c.moveToFirst()) {
+            createActivity(a, false);
+            isRowExist = 0;
+        }
+
+        return isRowExist;
     }
 
-    public int updateUser(int id, String userName, String bio, int profilePic, String password) {
-        SQLiteDatabase db = this.getWritableDatabase();
-        ContentValues values = new ContentValues();
-        values.put(KEY_USERNAME, userName);
-        values.put(KEY_BIO, bio);
-        values.put(KEY_PROFILE_PIC_ID, profilePic);
-        values.put(KEY_PASSWORD, password);
-        values.put(KEY_UPDATED_AT, getDateTime());
-//        Log.d("Nok", "update task: "+values.valueSet());
-        return db.update(TABLE_USER, values, KEY_ID + "=?", new String[]{String.valueOf(id)});
+    public int checkUserExistOnLocalDB(User u) { //check if exist or not
+        String selectQuery;
+        selectQuery = "SELECT * FROM " + TABLE_USER +" WHERE "+KEY_USERNAME+"= '"+u.getUsername()+"' and "+KEY_ID+ " = "+u.getID();
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor c = db.rawQuery(selectQuery, null);
+        int isRowExist = 1;
+        if (!c.moveToFirst()) {
+            createUser(u, false);
+            isRowExist = 0;
+        }
+
+        return isRowExist;
     }
+
+    public int checkNeighborhoodExistOnLocalDB(Neighborhood n) { //check if exist or not
+        String selectQuery;
+        selectQuery = "SELECT * FROM " + TABLE_NEIGHBORHOOD +" WHERE "+KEY_OWNER+"= '"+n.getOwner()+"' and "+KEY_ID+ " = "+n.getID();
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor c = db.rawQuery(selectQuery, null);
+        int isRowExist = 1;
+        if (!c.moveToFirst()) {
+            createNeighborhood(n, false);
+            isRowExist = 0;
+        }
+
+        return isRowExist;
+    }
+
+    public int checkGroupExistOnLocalDB(Group g) { //check if exist or not
+        String selectQuery;
+        selectQuery = "SELECT * FROM " + TABLE_GROUP +" WHERE "+KEY_OWNER+"= '"+g.getOwner()+"' and "+KEY_ID+ " = "+g.getID();
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor c = db.rawQuery(selectQuery, null);
+        int isRowExist = 1;
+        if (!c.moveToFirst()) {
+            createGroup(g, false);
+            isRowExist = 0;
+        }
+
+        return isRowExist;
+    }
+
+    public int checkConversationExistOnLocalDB(Conversation c) { //check if exist or not
+        String selectQuery;
+        selectQuery = "SELECT * FROM " + TABLE_CONVERSATION +" WHERE "+KEY_OWNER+"= '"+c.getOwner()+"' and "+KEY_ID+ " = "+c.getID()+" AND "+KEY_CLIENT+" = '"+c.getClient()+"'";
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor c1 = db.rawQuery(selectQuery, null);
+        int isRowExist = 1;
+        if (!c1.moveToFirst()) {
+            createConversation(c, false);
+            isRowExist = 0;
+        }
+
+        return isRowExist;
+    }
+
+//    public int updateUser(User u) {
+//        SQLiteDatabase db = this.getWritableDatabase();
+//        ContentValues values = new ContentValues();
+//        values.put(KEY_USERNAME, u.getUsername());
+//        values.put(KEY_BIO, u.getBio());
+//        values.put(KEY_PROFILE_PIC_ID, u.getProfilePic());
+//        values.put(KEY_PASSWORD, u.getPassword());
+//        values.put(KEY_UPDATED_AT, getDateTime());
+////        Log.d("Nok", "update task: "+values.valueSet());
+////        db.update(TABLE_NAME, contentValues NAME + " = ? AND " + LASTNAME + " = ?", new String[]{"Manas", "Bajaj"});
+//        int checkRowUpdate = db.update(TABLE_USER, values, KEY_ID+" = ? AND " + KEY_CREATED_AT + " = ? AND "+KEY_USERNAME+" =?", new String[]{String.valueOf(u.getID()), String.valueOf(u.getCreatedDate()), String.valueOf(u.getUsername())});
+//        if(checkRowUpdate == 0){
+//            createUser(u, false);
+//        }
+//        return checkRowUpdate;
+//    }
+
+
 
     public ArrayList<Activity> getActivity(String group) throws ParseException {
+        updateActivityFromCloud();
         ArrayList<Activity> listActivity = new ArrayList<Activity>();
         String selectQuery;
         if (group.equals("all")) {
@@ -244,22 +331,24 @@ public class LocalStorageAdapter extends SQLiteOpenHelper {
         if (c.moveToFirst()) {
             do {
                 SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-//                Log.d("Ibn", c.getString(c.getColumnIndex(KEY_TITLE)));
-//                Log.d("Ibn", c.getString(c.getColumnIndex(KEY_DESCRIPTION)));
-//                Log.d("Ibn", c.getString(c.getColumnIndex(KEY_REQUEST_OR_OFFER)));
-//                Log.d("Ibn", c.getString(c.getColumnIndex(KEY_GROUP_NAME)));
-//                Log.d("Ibn", c.getString(c.getColumnIndex(KEY_EXPIRT_DATE)));
-//                Log.d("Ibn", c.getString(c.getColumnIndex(KEY_OWNER)));
                 String tmp_date = c.getString(c.getColumnIndex(KEY_EXPIRT_DATE));
+                String tmp_Cdate = c.getString(c.getColumnIndex(KEY_CREATED_AT));
                 Date d = formatter.parse(tmp_date);
-                listActivity.add(new Activity(c.getString(c.getColumnIndex(KEY_TITLE)), c.getString(c.getColumnIndex(KEY_DESCRIPTION)), c.getInt(c.getColumnIndex(KEY_REQUEST_OR_OFFER)), c.getString(c.getColumnIndex(KEY_GROUP_NAME)), d, c.getString(c.getColumnIndex(KEY_OWNER))));
+                Date dC = formatter.parse(tmp_Cdate);
+                listActivity.add(new Activity(c.getString(c.getColumnIndex(KEY_TITLE)), c.getString(c.getColumnIndex(KEY_DESCRIPTION)), c.getInt(c.getColumnIndex(KEY_REQUEST_OR_OFFER)), c.getString(c.getColumnIndex(KEY_GROUP_NAME)), d, dC, c.getString(c.getColumnIndex(KEY_OWNER))));
             } while (c.moveToNext());
         }
 //        Activity a = new Activity()
         return listActivity;
     }
 
+    private void updateActivityFromCloud() { //delete data from local and load from cloud >> check the connection before delete
+        cloudDB = MyApp.getDBcloud();
+        cloudDB.getActivityToUpdateLocal();
+    }
+
     public ArrayList<Group> getGroups() {
+//        updateGroupFromCloud();
         ArrayList<Group> groups = new ArrayList<Group>();
         String selectQuery = "SELECT DISTINCT " + KEY_GROUP_NAME + ", " + KEY_OWNER + ", " + KEY_ID + ", " + KEY_MEMBER + " FROM " + TABLE_GROUP;
 
@@ -273,7 +362,14 @@ public class LocalStorageAdapter extends SQLiteOpenHelper {
         return groups;
     }
 
+    private void updateGroupFromCloud() {
+        cloudDB = MyApp.getDBcloud();
+        cloudDB.getGroupToUpdateLocal();
+
+    }
+
     public ArrayList<User> getUser(String owner) {
+        updateUserFromCloud();
         ArrayList<User> listUser = new ArrayList<User>();
         String selectQuery = "SELECT * FROM " + TABLE_USER + " WHERE "
                 + KEY_USERNAME + " = '" + owner + "'";
@@ -289,19 +385,28 @@ public class LocalStorageAdapter extends SQLiteOpenHelper {
         return listUser;
     }
 
+    private void updateUserFromCloud() {
+        cloudDB = MyApp.getDBcloud();
+        cloudDB.getUserToUpdateLocal();
+    }
+
     public ArrayList<Activity> getPersonalActivity(String owner) throws ParseException {
+        updateActivityFromCloud();
         ArrayList<Activity> listActivity = new ArrayList<Activity>();
         String selectQuery = "SELECT * FROM " + TABLE_ACTIVITY + " WHERE "
                 + KEY_OWNER + " = '" + owner + "'";
 
         SQLiteDatabase db = this.getReadableDatabase();
+        cloudDB = MyApp.getDBcloud();
         Cursor c = db.rawQuery(selectQuery, null);
         if (c.moveToFirst()) {
             do {
                 SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
                 String tmp_date = c.getString(c.getColumnIndex(KEY_EXPIRT_DATE));
+                String tmp_Cdate = c.getString(c.getColumnIndex(KEY_CREATED_AT));
                 Date d = formatter.parse(tmp_date);
-                listActivity.add(new Activity(c.getString(c.getColumnIndex(KEY_TITLE)), c.getString(c.getColumnIndex(KEY_DESCRIPTION)), c.getInt(c.getColumnIndex(KEY_REQUEST_OR_OFFER)), c.getString(c.getColumnIndex(KEY_GROUP_NAME)), d, c.getString(c.getColumnIndex(KEY_OWNER))));
+                Date dC = formatter.parse(tmp_Cdate);
+                listActivity.add(new Activity(c.getString(c.getColumnIndex(KEY_TITLE)), c.getString(c.getColumnIndex(KEY_DESCRIPTION)), c.getInt(c.getColumnIndex(KEY_REQUEST_OR_OFFER)), c.getString(c.getColumnIndex(KEY_GROUP_NAME)), d, dC, c.getString(c.getColumnIndex(KEY_OWNER))));
             } while (c.moveToNext());
         }
 
@@ -310,33 +415,34 @@ public class LocalStorageAdapter extends SQLiteOpenHelper {
     }
 
     public ArrayList<Conversation> getAllConversation(String user) {
+        updateConversationFromCloud();
         ArrayList<Conversation> listAllConversation = new ArrayList<Conversation>();
         String selectQuery = "SELECT * FROM " + TABLE_CONVERSATION + " WHERE "
-                + KEY_CLIENT + " = '" + user + "' OR "+ KEY_OWNER + " = '" + user +"' GROUP BY " + KEY_OWNER + ", " + KEY_TOPIC + " ORDER BY " + KEY_CREATED_AT+" DESC";
+                + KEY_CLIENT + " = '" + user + "' OR " + KEY_OWNER + " = '" + user + "' GROUP BY " + KEY_OWNER + ", " + KEY_TOPIC + " ORDER BY " + KEY_CREATED_AT + " DESC";
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor c = db.rawQuery(selectQuery, null);
         if (c.moveToFirst()) {
-            Log.d("Ibn","query");
+            Log.d("Ibn", "query");
             do {
-                if(user.equals(c.getString(c.getColumnIndex(KEY_CLIENT)))){
-                    Log.d("Ibn","Client");
-                    if(listAllConversation.size()>0){
+                if (user.equals(c.getString(c.getColumnIndex(KEY_CLIENT)))) {
+                    Log.d("Ibn", "Client");
+                    if (listAllConversation.size() > 0) {
                         for (int i = 0; i < listAllConversation.size(); i++) {
-                            Log.d("Ibn", i + ": "+c.getString(c.getColumnIndex(KEY_TOPIC)));
+                            Log.d("Ibn", i + ": " + c.getString(c.getColumnIndex(KEY_TOPIC)));
                             if (!(listAllConversation.get(i).getClient().equals(c.getString(c.getColumnIndex(KEY_CLIENT))) && listAllConversation.get(i).getTopic().equals(c.getString(c.getColumnIndex(KEY_TOPIC))))) {
                                 listAllConversation.add(new Conversation(c.getString(c.getColumnIndex(KEY_TOPIC)), c.getString(c.getColumnIndex(KEY_OWNER)), c.getString(c.getColumnIndex(KEY_CLIENT)), c.getString(c.getColumnIndex(KEY_CHAT_MESSAGE))));
                                 break;
                             }
                         }
-                    }else{
-                        Log.d("Ibn", ""+c.getString(c.getColumnIndex(KEY_TOPIC)));
+                    } else {
+                        Log.d("Ibn", "" + c.getString(c.getColumnIndex(KEY_TOPIC)));
                         listAllConversation.add(new Conversation(c.getString(c.getColumnIndex(KEY_TOPIC)), c.getString(c.getColumnIndex(KEY_OWNER)), c.getString(c.getColumnIndex(KEY_CLIENT)), c.getString(c.getColumnIndex(KEY_CHAT_MESSAGE))));
                     }
-                }else {
-                    Log.d("Ibn","Owner");
-                    if(listAllConversation.size()>0){
+                } else {
+                    Log.d("Ibn", "Owner");
+                    if (listAllConversation.size() > 0) {
                         for (int i = 0; i < listAllConversation.size(); i++) {
-                            Log.d("Ibn", i + ": "+c.getString(c.getColumnIndex(KEY_TOPIC)));
+                            Log.d("Ibn", i + ": " + c.getString(c.getColumnIndex(KEY_TOPIC)));
                             if (!(listAllConversation.get(i).getOwner().equals(c.getString(c.getColumnIndex(KEY_OWNER))) && listAllConversation.get(i).getTopic().equals(c.getString(c.getColumnIndex(KEY_TOPIC))))) {
 
 //                                if (listAllConversation.get(i).getClient().equals(c.getString(c.getColumnIndex(KEY_OWNER))) && listAllConversation.get(i).getTopic().equals(c.getString(c.getColumnIndex(KEY_TOPIC)))) {
@@ -344,36 +450,26 @@ public class LocalStorageAdapter extends SQLiteOpenHelper {
                                 break;
                             }
                         }
-                    }else{
-                        Log.d("Ibn", ""+c.getString(c.getColumnIndex(KEY_TOPIC)));
+                    } else {
+                        Log.d("Ibn", "" + c.getString(c.getColumnIndex(KEY_TOPIC)));
                         listAllConversation.add(new Conversation(c.getString(c.getColumnIndex(KEY_TOPIC)), c.getString(c.getColumnIndex(KEY_CLIENT)), c.getString(c.getColumnIndex(KEY_OWNER)), c.getString(c.getColumnIndex(KEY_CHAT_MESSAGE))));
                     }
                 }
             } while (c.moveToNext());
         }
 
-//        String selectQuery1 = "SELECT * FROM " + TABLE_CONVERSATION + " WHERE "
-//                + KEY_OWNER + " = '" + user + "' GROUP BY " + KEY_OWNER + ", " + KEY_TOPIC + " ORDER BY " + KEY_CREATED_AT+" DESC";
-//
-//        c = db.rawQuery(selectQuery1, null);
-//        if (c.moveToFirst()) {
-//            do {
-//                for (int i = 0; i < listAllConversation.size(); i++) {
-//                    if (!(listAllConversation.get(i).getClient().equals(c.getString(c.getColumnIndex(KEY_OWNER)))&&listAllConversation.get(i).getTopic().equals(c.getString(c.getColumnIndex(KEY_TOPIC))))) {
-//                        listAllConversation.add(new Conversation(c.getString(c.getColumnIndex(KEY_TOPIC)), c.getString(c.getColumnIndex(KEY_CLIENT)), c.getString(c.getColumnIndex(KEY_OWNER)), c.getString(c.getColumnIndex(KEY_CHAT_MESSAGE))));
-//                        break;
-//                    }
-//                }
-//            } while (c.moveToNext());
-//        }
-
         db.close();
 
         return listAllConversation;
     }
 
+    private void updateConversationFromCloud() {
+        cloudDB = MyApp.getDBcloud();
+        cloudDB.getConversationToUpdateLocal();
+    }
+
     public ArrayList<Conversation> getSpecificConversation(String owner, String topic, String user) {
-        //TODO: now it do like a broadcast ... fix it!!
+        updateConversationFromCloud();
         ArrayList<Conversation> listAllConversation = new ArrayList<Conversation>();
         String selectQuery = "SELECT * FROM " + TABLE_CONVERSATION + " WHERE ("
                 + KEY_OWNER + " = '" + owner + "'" + " AND " + KEY_TOPIC + " = '" + topic + "' AND " + KEY_CLIENT + " = '" + user + "') OR (" + KEY_OWNER + " = '" + user + "'" + " AND " + KEY_TOPIC + " = '" + topic + "' AND " + KEY_CLIENT + " = '" + owner + "')" + " ORDER BY " + KEY_CREATED_AT;
@@ -390,6 +486,7 @@ public class LocalStorageAdapter extends SQLiteOpenHelper {
     }
 
     public ArrayList<Neighborhood> getNeighborhood(String username) {
+        updateNeighborhoodFromCloud();
         ArrayList<Neighborhood> nbMarks = new ArrayList<Neighborhood>();
         String selectQuery = "SELECT * FROM " + TABLE_NEIGHBORHOOD + " WHERE "
                 + KEY_OWNER + " = '" + username + "'";
@@ -403,6 +500,11 @@ public class LocalStorageAdapter extends SQLiteOpenHelper {
         }
 
         return nbMarks;
+    }
+
+    private void updateNeighborhoodFromCloud() {
+        cloudDB = MyApp.getDBcloud();
+        cloudDB.getNeighborhoodToUpdateLocal();
     }
 
     // closing database
@@ -425,6 +527,9 @@ public class LocalStorageAdapter extends SQLiteOpenHelper {
     private String getDateTime(Date date) {
         SimpleDateFormat dateFormat = new SimpleDateFormat(
                 "yyyy-MM-dd HH:mm:ss", Locale.getDefault());
+        if(date == null){
+            date = new Date();
+        }
         return dateFormat.format(date);
     }
 

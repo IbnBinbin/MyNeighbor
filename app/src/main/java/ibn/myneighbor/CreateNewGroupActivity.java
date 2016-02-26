@@ -11,13 +11,13 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
-
 import ibn.myneighbor.Model.Group;
 
 public class CreateNewGroupActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        MyApp.initOnBroadCastReceiver(this);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_create_new_group);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -49,11 +49,11 @@ public class CreateNewGroupActivity extends AppCompatActivity {
             public void onClick(View view) {
                 EditText groupName = (EditText) findViewById(R.id.groupNameText);
                 String username = getSharedPreferences("PREFERENCE", MODE_PRIVATE).getString("username", "NULL");
-                LocalStorageAdapter db = new LocalStorageAdapter(view.getContext());
+                LocalStorageAdapter db = new LocalStorageAdapter();
                 if(groupName.getText().toString().trim().length()==0){
                     Toast.makeText(getApplicationContext(), "Please put the group name", Toast.LENGTH_SHORT).show();
                 }else {
-                    db.createGroup(new Group(0, username, groupName.getText().toString(), ""));
+                    db.createGroup(new Group(0, username, groupName.getText().toString(), ""), true);
 //                    Intent createNewActivity = new Intent(view.getContext(), MainActivity.class);
 //                    startActivity(createNewActivity);
                     finish();

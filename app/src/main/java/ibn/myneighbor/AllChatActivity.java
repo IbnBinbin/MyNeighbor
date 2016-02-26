@@ -10,7 +10,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
-
 import java.text.ParseException;
 import java.util.ArrayList;
 
@@ -31,13 +30,13 @@ public class AllChatActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        MyApp.initOnBroadCastReceiver(this);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_all_chat);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-
-        db = new LocalStorageAdapter(this.getApplicationContext());
+        db = new LocalStorageAdapter();
         ArrayList<Conversation> allConversation = new ArrayList<Conversation>();
         ArrayList<User> personalImgID = new ArrayList<User>();
         String username = getSharedPreferences("PREFERENCE", MODE_PRIVATE).getString("username", "NULL");

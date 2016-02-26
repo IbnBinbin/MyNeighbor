@@ -12,7 +12,6 @@ import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PolylineOptions;
-
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
@@ -38,14 +37,14 @@ public class NeighborhoodActivity extends FragmentActivity implements OnMapReady
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        MyApp.initOnBroadCastReceiver(this);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_neighborhood);
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
-
-        LocalStorageAdapter db = new LocalStorageAdapter(this);
+        LocalStorageAdapter db = new LocalStorageAdapter();
         nb = new ArrayList<Neighborhood>();
         nb.addAll(db.getNeighborhood("Ibn"));
         allLatLng = new ArrayList<String[]>();
@@ -93,9 +92,11 @@ public class NeighborhoodActivity extends FragmentActivity implements OnMapReady
         save.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                LocalStorageAdapter db = new LocalStorageAdapter(view.getContext());
+                LocalStorageAdapter db = new LocalStorageAdapter();
+                String username = getSharedPreferences("PREFERENCE", MODE_PRIVATE).getString("username", "NULL");
+
                 for (int i = 0; i < allLatLng.size(); i++) {
-                    db.createNeighborhood(allLatLng.get(i)[0], allLatLng.get(i)[1], Integer.parseInt(allLatLng.get(i)[2]), "Ibn");
+                    db.createNeighborhood(new Neighborhood(allLatLng.get(i)[0], allLatLng.get(i)[1], Integer.parseInt(allLatLng.get(i)[2]), username),true);
                 }
                 db.closeDB();
 //                Intent createNewActivity = new Intent(view.getContext(), MainActivity.class);

@@ -20,5 +20,8 @@ public class Group {
     public String getOwner(){return owner;}
     public String getGroupName(){return group_name;}
     public String getMember(){return member;}
+    public void setID(int id){this.id=id;}
+
+
 
 }

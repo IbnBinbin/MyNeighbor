@@ -1,6 +1,7 @@
 package ibn.myneighbor;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
@@ -18,6 +19,7 @@ import java.util.ArrayList;
 import java.util.Date;
 
 import ibn.myneighbor.Model.*;
+import android.content.SharedPreferences.Editor;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
@@ -34,12 +36,12 @@ public class MainActivity extends AppCompatActivity
     private LocalStorageAdapter db;
     private ArrayList<Group> allGroups;
     private String username;
+    private SharedPreferences prefs = null;
 //    private ImageButton chat;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-//
-
+        MyApp.initOnBroadCastReceiver(this);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -54,6 +56,8 @@ public class MainActivity extends AppCompatActivity
             }
         });
 
+        prefs = MyApp.getPrefs();
+
         updateActivityAndOwnerPic("all");
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -65,10 +69,14 @@ public class MainActivity extends AppCompatActivity
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
+
+//        prefsEditor.commit();
+//        cloudDB.testAddNewTaskToDB();
+
         Boolean isFirstRun = getSharedPreferences("PREFERENCE", MODE_PRIVATE).getBoolean("firstRun", true);
 
         if (isFirstRun) {
-            db = new LocalStorageAdapter(this.getApplicationContext());
+            db = new LocalStorageAdapter();
             assignInitialData(db);
             db.close();
             getSharedPreferences("PREFERENCE", MODE_PRIVATE).edit().putBoolean("firstRun", false).commit();
@@ -78,7 +86,7 @@ public class MainActivity extends AppCompatActivity
             finish();
         }
         username = getSharedPreferences("PREFERENCE", MODE_PRIVATE).getString("username", "NULL");
-
+        Log.d("Ibn", "Hello " + username);
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -110,29 +118,29 @@ public class MainActivity extends AppCompatActivity
 
     private void assignInitialData(LocalStorageAdapter db) {
         db.deleteAllData();
-        db.createActivity(new Activity("Feeding Dog", "dog dog dog", 0, "Gym", new Date(), "Egg"));
-        db.createActivity(new Activity("Babysisting", "baby baby baby", 0, "home", new Date(), "Ibn"));
-        db.createActivity(new Activity("Car Pool", "carrrrr", 1, "school", new Date(), "Pop"));
-        db.createActivity(new Activity("Math Tutoring", "12345", 0, "home", new Date(), "Touch"));
-        db.createActivity(new Activity("Plants Waatering", "waterr", 0, "school", new Date(), "Pim"));
-        db.createActivity(new Activity("Ubuntu", "...", 1, "gym", new Date(), "Pim"));
-        db.createActivity(new Activity("Dating", "~~~", 0, "all", new Date(), "Ibn"));
+        Log.d("Ibn", db.createActivity(new Activity("Feeding Dog", "dog dog dog", 0, "Gym", new Date(), null, "Egg"), true) + "__________");
+        db.createActivity(new Activity("Babysisting", "baby baby baby", 0, "home", new Date(), null,"Ibn"), true);
+        db.createActivity(new Activity("Car Pool", "carrrrr", 1, "school", new Date(), null,"Pop"),true);
+        db.createActivity(new Activity("Math Tutoring", "12345", 0, "home", new Date(), null,"Touch"),true);
+        db.createActivity(new Activity("Plants Waatering", "waterr", 0, "school", new Date(), null,"Pim"),true);
+        db.createActivity(new Activity("Ubuntu", "...", 1, "gym", new Date(), null,"Pim"),true);
+        db.createActivity(new Activity("Dating", "~~~", 0, "all", new Date(), null,"Ibn"),true);
 
-        db.createUser(new User("Ibn", "...", R.drawable.animation, "1234"));
-        db.createUser(new User("Pop", "...", R.drawable.dolphin, "1111"));
-        db.createUser(new User("Egg", "...", R.drawable.bear, "1232"));
-        db.createUser(new User("Touch", "...", R.drawable.octopus, "122"));
-        db.createUser(new User("Pim", "...", R.drawable.snowman, "333"));
+        db.createUser(new User("Ibn", "...", R.drawable.animation, "1234"),true);
+        db.createUser(new User("Pop", "...", R.drawable.dolphin, "1111"),true);
+        db.createUser(new User("Egg", "...", R.drawable.bear, "1232"),true);
+        db.createUser(new User("Touch", "...", R.drawable.octopus, "122"),true);
+        db.createUser(new User("Pim", "...", R.drawable.snowman, "333"),true);
 
-        db.createGroup(new Group(0, "Ibn", "home", "Touch, Pim"));
-        db.createGroup(new Group(0, "Ibn", "school", "Egg, Pim"));
-        db.createGroup(new Group(0, "Ibn", "Gym", "Egg"));
+        db.createGroup(new Group(0, "Ibn", "home", "Touch, Pim"),true);
+        db.createGroup(new Group(0, "Ibn", "school", "Egg, Pim"),true);
+        db.createGroup(new Group(0, "Ibn", "Gym", "Egg"),true);
 
-        db.createConversation(new Conversation("Test", "Ibn", "Pim", "Hello"));
-        db.createConversation(new Conversation("Test1", "Touch", "Ibn", "Hello1"));
-        db.createConversation(new Conversation("Test2", "Egg", "Pop", "Hello2"));
-        db.createConversation(new Conversation("Test3", "Touch", "Egg", "Hello3"));
-        db.createConversation(new Conversation("Test4", "Pop", "Ibn", "Hello4"));
+        db.createConversation(new Conversation("Test", "Ibn", "Pim", "Hello"),true);
+        db.createConversation(new Conversation("Test1", "Touch", "Ibn", "Hello1"),true);
+        db.createConversation(new Conversation("Test2", "Egg", "Pop", "Hello2"),true);
+        db.createConversation(new Conversation("Test3", "Touch", "Egg", "Hello3"),true);
+        db.createConversation(new Conversation("Test4", "Pop", "Ibn", "Hello4"),true);
     }
 
     public void onClickChat(View view) {
@@ -217,7 +225,7 @@ public class MainActivity extends AppCompatActivity
     }
 
     private void updateActivityAndOwnerPic(String group) {
-        db = new LocalStorageAdapter(this.getApplicationContext());
+        db = new LocalStorageAdapter();
         ArrayList<Activity> act = new ArrayList<Activity>();
         activityNeedList.clear();
         profilePicList.clear();
@@ -240,7 +248,6 @@ public class MainActivity extends AppCompatActivity
         for (int i = 0; i < user.size(); i++) {
             profilePicList.add(user.get(i).getProfilePic());
         }
-        db.closeDB();
 
         CustomListAdapter adapter = new CustomListAdapter(this, activityNeedList, profilePicList, ownerList, offerOrReqList);
         adapter.notifyDataSetChanged();
