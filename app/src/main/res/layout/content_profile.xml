@@ -37,18 +37,6 @@
                 android:layout_centerHorizontal="true"
                 android:src="@drawable/panda"/>
 
-            <ImageButton
-                android:layout_width="30dp"
-                android:layout_height="30dp"
-                android:id="@+id/editButton"
-                android:layout_alignParentRight="true"
-                android:src="@android:drawable/ic_menu_edit"
-                android:layout_alignParentEnd="true"
-                android:layout_alignParentBottom="true"
-                android:paddingRight="10dp"
-                android:paddingBottom="10dp"
-                android:onClick="onClickEdit"/>
-
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -58,7 +46,7 @@
                 android:paddingLeft="10dp"
                 android:paddingBottom="10dp"
                 android:onClick="onClickChat"
-                android:text="Ibn"
+                android:text="Unknown"
                 android:textSize="40dp"/>
 
         </RelativeLayout>

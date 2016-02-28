@@ -7,8 +7,7 @@ import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
-import android.widget.AdapterView;
-import android.widget.ListView;
+import android.widget.*;
 import java.util.*;
 
 import java.text.ParseException;
@@ -52,6 +51,14 @@ public class ProfileActivity extends AppCompatActivity {
         } catch (ParseException e) {
             e.printStackTrace();
         }
+
+        TextView proName = (TextView) findViewById(R.id.nameText);
+        proName.setText(username);
+
+        ImageView proImg = (ImageView) findViewById(R.id.profilePic);
+        LocalStorageAdapter db = new LocalStorageAdapter();
+        ArrayList<User>uA=db.getUser(username);
+        proImg.setImageResource(uA.get(0).getProfilePic());
 
         user=new ArrayList<User>();
         activityNeedList=new ArrayList<String>();

@@ -336,7 +336,7 @@ public class LocalStorageAdapter extends SQLiteOpenHelper {
         }
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor c = db.rawQuery(selectQuery, null);
-        if (c.moveToLast()) {
+        if (c.moveToFirst()) {
             do {
                 SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
                 String tmp_date = c.getString(c.getColumnIndex(KEY_EXPIRT_DATE));
@@ -345,7 +345,7 @@ public class LocalStorageAdapter extends SQLiteOpenHelper {
                 Date dC = formatter.parse(tmp_Cdate);
                 Log.d("Ibn","activity: "+c.getString(c.getColumnIndex(KEY_TITLE)));
                 listActivity.add(new Activity(c.getString(c.getColumnIndex(KEY_TITLE)), c.getString(c.getColumnIndex(KEY_DESCRIPTION)), c.getInt(c.getColumnIndex(KEY_REQUEST_OR_OFFER)), c.getString(c.getColumnIndex(KEY_GROUP_NAME)), d, dC, c.getString(c.getColumnIndex(KEY_OWNER))));
-            } while (c.moveToPrevious());
+            } while (c.moveToNext());
         }
 //        Activity a = new Activity()
         return listActivity;
