@@ -77,16 +77,17 @@ public class MainActivity extends AppCompatActivity
         Boolean isFirstRun = getSharedPreferences("PREFERENCE", MODE_PRIVATE).getBoolean("firstRun", true);
 
         if (isFirstRun) {
-            db = new LocalStorageAdapter();
-            assignInitialData(db);
-            db.close();
+//            db = new LocalStorageAdapter();
+//            assignInitialData(db);
+//            db.close();
+            assignInitialFromCloud();
             getSharedPreferences("PREFERENCE", MODE_PRIVATE).edit().putBoolean("firstRun", false).commit();
 
             Intent createNewActivity = new Intent(this.getApplicationContext(), Login.class);
             startActivity(createNewActivity);
             finish();
         }
-        username = getSharedPreferences("PREFERENCE", MODE_PRIVATE).getString("username", "NULL");
+        username = MyApp.getUsername();
         Log.d("Ibn", "Hello " + username);
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -117,6 +118,18 @@ public class MainActivity extends AppCompatActivity
 
     }
 
+    private void assignInitialFromCloud() {
+        LocalStorageAdapter db = new LocalStorageAdapter();
+        db.deleteAllData();
+        db.closeDB();
+        MyApp.getDBcloud().getUserToUpdateLocal();
+        MyApp.getDBcloud().getActivityToUpdateLocal();
+        MyApp.getDBcloud().getConversationToUpdateLocal();
+        MyApp.getDBcloud().getGroupToUpdateLocal();
+//        MyApp.getDBcloud().getNeighborhoodToUpdateLocal();
+
+    }
+
     private void assignInitialData(LocalStorageAdapter db) {
         db.deleteAllData();
         Log.d("Ibn", db.createActivity(new Activity("Feeding Dog", "dog dog dog", 0, "Gym", new Date(), null, "Egg"), true) + "__________");
@@ -125,13 +138,14 @@ public class MainActivity extends AppCompatActivity
         db.createActivity(new Activity("Math Tutoring", "12345", 0, "home", new Date(), null,"Touch"),true);
         db.createActivity(new Activity("Plants Waatering", "waterr", 0, "school", new Date(), null,"Pim"),true);
         db.createActivity(new Activity("Ubuntu", "...", 1, "gym", new Date(), null,"Pim"),true);
-        db.createActivity(new Activity("Dating", "~~~", 0, "all", new Date(), null,"Ibn"),true);
+        db.createActivity(new Activity("Dating", "~~~", 0, "all", new Date(), null, "Ibn"), true);
 
         db.createUser(new User("Ibn", "...", R.drawable.animation, "1234"),true);
         db.createUser(new User("Pop", "...", R.drawable.dolphin, "1111"),true);
         db.createUser(new User("Egg", "...", R.drawable.bear, "1232"),true);
         db.createUser(new User("Touch", "...", R.drawable.octopus, "122"),true);
         db.createUser(new User("Pim", "...", R.drawable.snowman, "333"),true);
+        db.createUser(new User("Unknown", "...", R.drawable.unknown, "333"),true);
 
         db.createGroup(new Group(0, "Ibn", "home", "Touch, Pim"),true);
         db.createGroup(new Group(0, "Ibn", "school", "Egg, Pim"),true);
@@ -240,14 +254,19 @@ public class MainActivity extends AppCompatActivity
         }
         ArrayList<User> user = new ArrayList<User>();
         for (int i = 0; i < act.size(); i++) {
-            activityNeedList.add(act.get(i).getTitle());
-            ownerList.add(act.get(i).getOwner());
-            offerOrReqList.add(act.get(i).getRequestOrOffer());
-            user.addAll(db.getUser(ownerList.get(i)));
+            if(act.get(i).getOwner()!=null) {
+
+                activityNeedList.add(act.get(i).getTitle());
+                ownerList.add(act.get(i).getOwner());
+                offerOrReqList.add(act.get(i).getRequestOrOffer());
+                user.addAll(db.getUser(ownerList.get(i)));
+            }
 
         }
         for (int i = 0; i < user.size(); i++) {
-            profilePicList.add(user.get(i).getProfilePic());
+            if(act.get(i).getOwner()!=null) {
+                profilePicList.add(user.get(i).getProfilePic());
+            }
         }
 
         CustomListAdapter adapter = new CustomListAdapter(this, activityNeedList, profilePicList, ownerList, offerOrReqList);

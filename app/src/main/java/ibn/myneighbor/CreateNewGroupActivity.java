@@ -48,7 +48,7 @@ public class CreateNewGroupActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 EditText groupName = (EditText) findViewById(R.id.groupNameText);
-                String username = getSharedPreferences("PREFERENCE", MODE_PRIVATE).getString("username", "NULL");
+                String username = MyApp.getUsername();
                 LocalStorageAdapter db = new LocalStorageAdapter();
                 if(groupName.getText().toString().trim().length()==0){
                     Toast.makeText(getApplicationContext(), "Please put the group name", Toast.LENGTH_SHORT).show();

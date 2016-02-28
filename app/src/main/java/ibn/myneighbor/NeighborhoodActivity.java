@@ -46,7 +46,8 @@ public class NeighborhoodActivity extends FragmentActivity implements OnMapReady
         mapFragment.getMapAsync(this);
         LocalStorageAdapter db = new LocalStorageAdapter();
         nb = new ArrayList<Neighborhood>();
-        nb.addAll(db.getNeighborhood("Ibn"));
+        nb.addAll(db.getNeighborhood(MyApp.getUsername()));
+        Log.d("Ibn", "nb size: "+nb.size());
         allLatLng = new ArrayList<String[]>();
 
         db.closeDB();
@@ -93,7 +94,7 @@ public class NeighborhoodActivity extends FragmentActivity implements OnMapReady
             @Override
             public void onClick(View view) {
                 LocalStorageAdapter db = new LocalStorageAdapter();
-                String username = getSharedPreferences("PREFERENCE", MODE_PRIVATE).getString("username", "NULL");
+                String username = MyApp.getUsername();
 
                 for (int i = 0; i < allLatLng.size(); i++) {
                     db.createNeighborhood(new Neighborhood(allLatLng.get(i)[0], allLatLng.get(i)[1], Integer.parseInt(allLatLng.get(i)[2]), username),true);

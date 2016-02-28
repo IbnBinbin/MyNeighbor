@@ -48,7 +48,7 @@ public class ChatActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 Log.d("Ibn", "sendddd: " + textView.getText());
-                String username = getSharedPreferences("PREFERENCE", MODE_PRIVATE).getString("username", "NULL");
+                String username = MyApp.getUsername();
                 LocalStorageAdapter db = new LocalStorageAdapter();
                 db.createConversation(new Conversation(activity, username, ownerName, textView.getText().toString()), true);
                 db.closeDB();
@@ -67,7 +67,7 @@ public class ChatActivity extends AppCompatActivity {
         db = new LocalStorageAdapter();
         ArrayList<Conversation> allConversation = new ArrayList<Conversation>();
         ArrayList<User> personalImgID = new ArrayList<User>();
-        String username = getSharedPreferences("PREFERENCE", MODE_PRIVATE).getString("username", "NULL");
+        String username = MyApp.getUsername();
         allConversation = db.getSpecificConversation(ownerName, activity, username);
 
 
@@ -81,6 +81,7 @@ public class ChatActivity extends AppCompatActivity {
             user.addAll(db.getUser(ownerList.get(i)));
         }
         for (int i = 0; i < user.size(); i++) {
+            Log.d("Ibn", "profile pic id: "+user.get(i).getProfilePic());
             profilePicList.add(user.get(i).getProfilePic());
         }
         CustomAllChatList adapter = new CustomAllChatList(this, chatMessageList, profilePicList, ownerList, offerOrReqList, false);

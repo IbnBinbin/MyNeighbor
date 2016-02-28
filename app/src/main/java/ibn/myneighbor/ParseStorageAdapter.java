@@ -285,70 +285,78 @@ public class ParseStorageAdapter extends Application {
 
     public ArrayList<Neighborhood> getNeighborhoodToUpdateLocal() {
         final ArrayList<Neighborhood> listObject = new ArrayList<Neighborhood>();
-        ParseQuery<ParseObject> query = new ParseQuery<ParseObject>("Conversation");
-//        try {
-//            List<ParseObject> objects = query.find();
-//            for (int i = 0; i < objects.size(); i++) {
-//                ParseObject c = objects.get(i);
-//                listObject.add(new Neighborhood(c.getString("POINT"), c.getString("FINAL_POINT"), Integer.parseInt(c.getString("DRAW_TYPE")), c.getString("OWNER")));
-//            }
-//        } catch (ParseException e) {
-//            e.printStackTrace();
-//        }
-        query.findInBackground(new FindCallback<ParseObject>() {
-            @Override
-            public void done(List<ParseObject> objects, ParseException e) {
-                if (e == null) {
-                    // your logic here
-                    for (int i = 0; i < objects.size(); i++) {
-                        ParseObject c = objects.get(i);
-                        listObject.add(new Neighborhood(c.getString("POINT"), c.getString("FINAL_POINT"), Integer.parseInt(c.getString("DRAW_TYPE")), c.getString("OWNER")));
-                        listObject.get(i).setID(c.getInt("ID"));
-                    }
-                    for (int i = 0; i < listObject.size(); i++) {
-                        LocalStorageAdapter db = new LocalStorageAdapter();
-                        db.checkNeighborhoodExistOnLocalDB(listObject.get(i)); //update local
-                        db.closeDB();
-                    }
-                } else {
-                    Log.d("Ibn", "Error get neighborhood: " + e.getMessage());
-                }
+        ParseQuery<ParseObject> query = new ParseQuery<ParseObject>("Neighborhood");
+        try {
+            List<ParseObject> objects = query.find();
+            for (int i = 0; i < objects.size(); i++) {
+                ParseObject c = objects.get(i);
+                listObject.add(new Neighborhood(c.getString("POINT"), c.getString("FINAL_POINT"), Integer.parseInt(c.getString("DRAW_TYPE")), c.getString("OWNER")));
+                listObject.get(i).setID(c.getInt("ID"));
             }
-        });
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+//        query.findInBackground(new FindCallback<ParseObject>() {
+//            @Override
+//            public void done(List<ParseObject> objects, ParseException e) {
+//                if (e == null) {
+//                    // your logic here
+//                    for (int i = 0; i < objects.size(); i++) {
+//                        ParseObject c = objects.get(i);
+//                        listObject.add(new Neighborhood(c.getString("POINT"), c.getString("FINAL_POINT"), Integer.parseInt(c.getString("DRAW_TYPE")), c.getString("OWNER")));
+//                        listObject.get(i).setID(c.getInt("ID"));
+//                    }
+//                    for (int i = 0; i < listObject.size(); i++) {
+//                        LocalStorageAdapter db = new LocalStorageAdapter();
+//                        db.checkNeighborhoodExistOnLocalDB(listObject.get(i)); //update local
+//                        db.closeDB();
+//                    }
+//                } else {
+//                    Log.d("Ibn", "Error get neighborhood: " + e.getMessage());
+//                }
+//            }
+//        });
         return listObject;
     }
 
     public ArrayList<Group> getGroupToUpdateLocal() {
         final ArrayList<Group> listObject = new ArrayList<Group>();
-        ParseQuery<ParseObject> query = new ParseQuery<ParseObject>("Conversation");
-//        try {
-//            List<ParseObject> objects = query.find();
-//            for (int i = 0; i < objects.size(); i++) {
-//                ParseObject c = objects.get(i);
-//                listObject.add(new Group(c.getInt("ID"), c.getString("OWNER"), c.getString("GROUP_NAME"), c.getString("MEMBER")));
-//            }
-//        } catch (ParseException e) {
-//            e.printStackTrace();
-//        }
-        query.findInBackground(new FindCallback<ParseObject>() {
-            @Override
-            public void done(List<ParseObject> objects, ParseException e) {
-                if (e == null) {
-                    // your logic here
-                    for (int i = 0; i < objects.size(); i++) {
-                        ParseObject c = objects.get(i);
-                        listObject.add(new Group(c.getInt("ID"), c.getString("OWNER"), c.getString("GROUP_NAME"), c.getString("MEMBER")));
-                    }
-                    for (int i = 0; i < listObject.size(); i++) {
-                        LocalStorageAdapter db = new LocalStorageAdapter();
-                        db.checkGroupExistOnLocalDB(listObject.get(i)); //update local
-                        db.closeDB();
-                    }
-                } else {
-                    Log.d("Ibn", "Error get group: " + e.getMessage());
-                }
+        ParseQuery<ParseObject> query = new ParseQuery<ParseObject>("Group");
+        try {
+            List<ParseObject> objects = query.find();
+            Log.d("Ibn", objects.size()+"");
+            for (int i = 0; i < objects.size(); i++) {
+                ParseObject c = objects.get(i);
+                listObject.add(new Group(c.getInt("ID"), c.getString("OWNER"), c.getString("GROUP_NAME"), c.getString("MEMBER")));
+
             }
-        });
+            for (int i = 0; i < listObject.size(); i++) {
+                LocalStorageAdapter db = new LocalStorageAdapter();
+                db.checkGroupExistOnLocalDB(listObject.get(i)); //update local
+                db.closeDB();
+            }
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+//        query.findInBackground(new FindCallback<ParseObject>() {
+//            @Override
+//            public void done(List<ParseObject> objects, ParseException e) {
+//                if (e == null) {
+//                    // your logic here
+//                    for (int i = 0; i < objects.size(); i++) {
+//                        ParseObject c = objects.get(i);
+//                        listObject.add(new Group(c.getInt("ID"), c.getString("OWNER"), c.getString("GROUP_NAME"), c.getString("MEMBER")));
+//                    }
+//                    for (int i = 0; i < listObject.size(); i++) {
+//                        LocalStorageAdapter db = new LocalStorageAdapter();
+//                        db.checkGroupExistOnLocalDB(listObject.get(i)); //update local
+//                        db.closeDB();
+//                    }
+//                } else {
+//                    Log.d("Ibn", "Error get group: " + e.getMessage());
+//                }
+//            }
+//        });
         return listObject;
     }
 

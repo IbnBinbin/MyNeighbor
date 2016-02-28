@@ -39,7 +39,7 @@ public class AllChatActivity extends AppCompatActivity {
         db = new LocalStorageAdapter();
         ArrayList<Conversation> allConversation = new ArrayList<Conversation>();
         ArrayList<User> personalImgID = new ArrayList<User>();
-        String username = getSharedPreferences("PREFERENCE", MODE_PRIVATE).getString("username", "NULL");
+        String username = MyApp.getUsername();
         allConversation = db.getAllConversation(username);
 
 

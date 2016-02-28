@@ -46,7 +46,7 @@ public class ProfileActivity extends AppCompatActivity {
         db = new LocalStorageAdapter();
         ArrayList<Activity> personalActivity=new ArrayList<Activity>();
         ArrayList<User> personalImgID=new ArrayList<User>();
-        String username = getSharedPreferences("PREFERENCE", MODE_PRIVATE).getString("username", "NULL");
+        String username = MyApp.getUsername();
         try {
             personalActivity=db.getPersonalActivity(username);
         } catch (ParseException e) {
@@ -59,14 +59,18 @@ public class ProfileActivity extends AppCompatActivity {
         offerOrReqList=new ArrayList<Integer>();
         profilePicList=new ArrayList<Integer>();
         for (int i = 0; i < personalActivity.size(); i++) {
-            activityNeedList.add(personalActivity.get(i).getTitle());
-            ownerList.add(personalActivity.get(i).getOwner());
-            offerOrReqList.add(personalActivity.get(i).getRequestOrOffer());
-            user.addAll(db.getUser(ownerList.get(i)));
+            if(personalActivity.get(i).getOwner()!=null) {
+                activityNeedList.add(personalActivity.get(i).getTitle());
+                ownerList.add(personalActivity.get(i).getOwner());
+                offerOrReqList.add(personalActivity.get(i).getRequestOrOffer());
+                user.addAll(db.getUser(ownerList.get(i)));
+            }
 
         }
         for (int i = 0; i < user.size(); i++) {
-            profilePicList.add(user.get(i).getProfilePic());
+            if(personalActivity.get(i).getOwner()!=null) {
+                profilePicList.add(user.get(i).getProfilePic());
+            }
         }
 
 

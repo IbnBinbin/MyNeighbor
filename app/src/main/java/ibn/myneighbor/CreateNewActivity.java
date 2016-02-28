@@ -137,7 +137,7 @@ public class CreateNewActivity extends AppCompatActivity {
             public void onClick(View view) {
                 EditText title = (EditText) findViewById(R.id.titleText);
                 EditText desc = (EditText) findViewById(R.id.descText);
-                String username = getSharedPreferences("PREFERENCE", MODE_PRIVATE).getString("username", "NULL");
+                String username = MyApp.getUsername();
                 LocalStorageAdapter db = new LocalStorageAdapter();
                 if(title.getText().toString().trim().length()==0){
                     Toast.makeText(getApplicationContext(), "Please put the title", Toast.LENGTH_SHORT).show();

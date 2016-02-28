@@ -10,6 +10,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import java.util.ArrayList;
+import android.util.Log;
 
 /**
  * Created by ttnok on 22/2/2559.
@@ -48,6 +49,7 @@ public class CustomAllChatList extends ArrayAdapter<String>{
             owner.setText(this.owner.get(position) + " said");
         }
         txtTitle.setText(itemname.get(position));
+        Log.d("Ibn", imgid.get(position)+" :imgid");
         imageView.setImageResource(imgid.get(position));
 
         ArrayList<String> tag = new ArrayList<String>();

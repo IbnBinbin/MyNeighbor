@@ -28,7 +28,14 @@ public class Login extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 EditText username = (EditText) findViewById(R.id.username);
-                getSharedPreferences("PREFERENCE", MODE_PRIVATE).edit().putString("username", username.getText().toString()).commit();
+                LocalStorageAdapter db = new LocalStorageAdapter();
+                if(db.checkUser(username.getText().toString())){
+                    MyApp.setUsername(username.getText().toString());
+                }else{
+                    MyApp.setUsername("Unknown");
+
+                }
+//                getSharedPreferences("PREFERENCE", MODE_PRIVATE).edit().putString("username", username.getText().toString()).commit();
                 Intent createNewActivity = new Intent(getBaseContext(), MainActivity.class);
                 startActivity(createNewActivity);
 //                finish();
