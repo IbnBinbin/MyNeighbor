@@ -126,7 +126,7 @@ public class MainActivity extends AppCompatActivity
         MyApp.getDBcloud().getActivityToUpdateLocal();
         MyApp.getDBcloud().getConversationToUpdateLocal();
         MyApp.getDBcloud().getGroupToUpdateLocal();
-//        MyApp.getDBcloud().getNeighborhoodToUpdateLocal();
+        MyApp.getDBcloud().getNeighborhoodToUpdateLocal();
 
     }
 
@@ -134,22 +134,26 @@ public class MainActivity extends AppCompatActivity
         db.deleteAllData();
         Log.d("Ibn", db.createActivity(new Activity("Feeding Dog", "dog dog dog", 0, "Gym", new Date(), null, "Egg"), true) + "__________");
         db.createActivity(new Activity("Babysisting", "baby baby baby", 0, "home", new Date(), null,"Ibn"), true);
-        db.createActivity(new Activity("Car Pool", "carrrrr", 1, "school", new Date(), null,"Pop"),true);
-        db.createActivity(new Activity("Math Tutoring", "12345", 0, "home", new Date(), null,"Touch"),true);
-        db.createActivity(new Activity("Plants Waatering", "waterr", 0, "school", new Date(), null,"Pim"),true);
+        db.createActivity(new Activity("Car Pool", "carrrrr", 1, "school", new Date(), null, "Pop"), true);
+        db.createActivity(new Activity("Math Tutoring", "12345", 0, "home", new Date(), null, "Touch"), true);
+        db.createActivity(new Activity("Plants Waatering", "waterr", 0, "school", new Date(), null, "Pim"), true);
         db.createActivity(new Activity("Ubuntu", "...", 1, "gym", new Date(), null,"Pim"),true);
         db.createActivity(new Activity("Dating", "~~~", 0, "all", new Date(), null, "Ibn"), true);
 
-        db.createUser(new User("Ibn", "...", R.drawable.animation, "1234"),true);
-        db.createUser(new User("Pop", "...", R.drawable.dolphin, "1111"),true);
-        db.createUser(new User("Egg", "...", R.drawable.bear, "1232"),true);
-        db.createUser(new User("Touch", "...", R.drawable.octopus, "122"),true);
+        db.createUser(new User("Ibn", "...", R.drawable.animation, "1234"), true);
+        db.createUser(new User("Pop", "...", R.drawable.dolphin, "1111"), true);
+        db.createUser(new User("Egg", "...", R.drawable.bear, "1232"), true);
+        db.createUser(new User("Touch", "...", R.drawable.octopus, "122"), true);
         db.createUser(new User("Pim", "...", R.drawable.snowman, "333"),true);
         db.createUser(new User("Unknown", "...", R.drawable.unknown, "333"),true);
 
-        db.createGroup(new Group(0, "Ibn", "home", "Touch, Pim"),true);
-        db.createGroup(new Group(0, "Ibn", "school", "Egg, Pim"),true);
-        db.createGroup(new Group(0, "Ibn", "Gym", "Egg"),true);
+        db.createGroup(new Group(0, "Ibn", "home", "Touch, Pim"), true);
+        db.createGroup(new Group(0, "Ibn", "school", "Egg, Pim"), true);
+        db.createGroup(new Group(0, "Ibn", "Gym", "Egg"), true);
+        db.createGroup(new Group(0, "Touch", "home", "Ibn, Pim"),true);
+        db.createGroup(new Group(0, "Touch", "school", "Pop, Pim"),true);
+        db.createGroup(new Group(0, "Touch", "office", "Egg"),true);
+        db.createGroup(new Group(0, "Pim", "home", "Ibn"),true);
 
         db.createConversation(new Conversation("Test", "Ibn", "Pim", "Hello"),true);
         db.createConversation(new Conversation("Test1", "Touch", "Ibn", "Hello1"),true);
@@ -183,7 +187,7 @@ public class MainActivity extends AppCompatActivity
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.main, menu);
+//        getMenuInflater().inflate(R.menu.main, menu);
 
         return true;
     }

@@ -265,7 +265,7 @@ public class LocalStorageAdapter extends SQLiteOpenHelper {
 
     public int checkNeighborhoodExistOnLocalDB(Neighborhood n) { //check if exist or not
         String selectQuery;
-        selectQuery = "SELECT * FROM " + TABLE_NEIGHBORHOOD +" WHERE "+KEY_OWNER+"= '"+n.getOwner()+"' and "+KEY_ID+ " = "+n.getID();
+        selectQuery = "SELECT * FROM " + TABLE_NEIGHBORHOOD +" WHERE "+KEY_OWNER+"= '"+n.getOwner()+"' and "+KEY_FINAL_POINT+ " = '"+n.getFinalPoint()+"' and "+KEY_DRAW_TYPE+ " = "+n.getDrawType();
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor c = db.rawQuery(selectQuery, null);
         int isRowExist = 1;
@@ -405,7 +405,7 @@ public class LocalStorageAdapter extends SQLiteOpenHelper {
         updateActivityFromCloud();
         ArrayList<Activity> listActivity = new ArrayList<Activity>();
         String selectQuery = "SELECT * FROM " + TABLE_ACTIVITY + " WHERE "
-                + KEY_OWNER + " = '" + owner + "'";
+                + KEY_OWNER + " = '" + owner + "'" + " ORDER BY " + KEY_CREATED_AT + " DESC";
 
         SQLiteDatabase db = this.getReadableDatabase();
         cloudDB = MyApp.getDBcloud();

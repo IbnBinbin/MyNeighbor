@@ -21,6 +21,8 @@ public class Login extends AppCompatActivity {
         setSupportActionBar(toolbar);
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        EditText username = (EditText) findViewById(R.id.username);
+        username.setText("");
 
 
         Button start = (Button) findViewById(R.id.start);
@@ -31,14 +33,16 @@ public class Login extends AppCompatActivity {
                 LocalStorageAdapter db = new LocalStorageAdapter();
                 if(db.checkUser(username.getText().toString())){
                     MyApp.setUsername(username.getText().toString());
+//                getSharedPreferences("PREFERENCE", MODE_PRIVATE).edit().putString("username", username.getText().toString()).commit();
+                    Intent createNewActivity = new Intent(getBaseContext(), MainActivity.class);
+                    startActivity(createNewActivity);
+//                finish();
                 }else{
                     MyApp.setUsername("Unknown");
+                    Toast.makeText(getApplicationContext(), "This username does not exist.", Toast.LENGTH_SHORT).show();
 
                 }
-//                getSharedPreferences("PREFERENCE", MODE_PRIVATE).edit().putString("username", username.getText().toString()).commit();
-                Intent createNewActivity = new Intent(getBaseContext(), MainActivity.class);
-                startActivity(createNewActivity);
-//                finish();
+
             }
         });
     }

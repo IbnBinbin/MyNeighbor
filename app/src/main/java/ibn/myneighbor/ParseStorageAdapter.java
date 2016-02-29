@@ -286,36 +286,38 @@ public class ParseStorageAdapter extends Application {
     public ArrayList<Neighborhood> getNeighborhoodToUpdateLocal() {
         final ArrayList<Neighborhood> listObject = new ArrayList<Neighborhood>();
         ParseQuery<ParseObject> query = new ParseQuery<ParseObject>("Neighborhood");
-        try {
-            List<ParseObject> objects = query.find();
-            for (int i = 0; i < objects.size(); i++) {
-                ParseObject c = objects.get(i);
-                listObject.add(new Neighborhood(c.getString("POINT"), c.getString("FINAL_POINT"), Integer.parseInt(c.getString("DRAW_TYPE")), c.getString("OWNER")));
-                listObject.get(i).setID(c.getInt("ID"));
-            }
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
-//        query.findInBackground(new FindCallback<ParseObject>() {
-//            @Override
-//            public void done(List<ParseObject> objects, ParseException e) {
-//                if (e == null) {
-//                    // your logic here
-//                    for (int i = 0; i < objects.size(); i++) {
-//                        ParseObject c = objects.get(i);
-//                        listObject.add(new Neighborhood(c.getString("POINT"), c.getString("FINAL_POINT"), Integer.parseInt(c.getString("DRAW_TYPE")), c.getString("OWNER")));
-//                        listObject.get(i).setID(c.getInt("ID"));
-//                    }
-//                    for (int i = 0; i < listObject.size(); i++) {
-//                        LocalStorageAdapter db = new LocalStorageAdapter();
-//                        db.checkNeighborhoodExistOnLocalDB(listObject.get(i)); //update local
-//                        db.closeDB();
-//                    }
-//                } else {
-//                    Log.d("Ibn", "Error get neighborhood: " + e.getMessage());
-//                }
+//        try {
+//            List<ParseObject> objects = query.find();
+//            for (int i = 0; i < objects.size(); i++) {
+//                ParseObject c = objects.get(i);
+////                int type = c.getInt(c.getString("DRAW_TYPE"));
+//                listObject.add(new Neighborhood(c.getString("POINT"), c.getString("FINAL_POINT"), c.getInt(c.getString("DRAW_TYPE")), c.getString("OWNER")));
+//                listObject.get(i).setID(c.getInt("ID"));
 //            }
-//        });
+//        } catch (ParseException e) {
+//            e.printStackTrace();
+//        }
+        query.findInBackground(new FindCallback<ParseObject>() {
+            @Override
+            public void done(List<ParseObject> objects, ParseException e) {
+                if (e == null) {
+                    // your logic here
+                    for (int i = 0; i < objects.size(); i++) {
+                        ParseObject c = objects.get(i);
+                        listObject.add(new Neighborhood(c.getString("INITIAL_POINT"), c.getString("FINAL_POINT"), c.getInt("DRAW_TYPE"), c.getString("OWNER")));
+                        listObject.get(i).setID(c.getInt("ID"));
+                        Log.d("Ibn",listObject.get(i).getOwner()+" "+listObject.get(i).getFinalPoint());
+                    }
+                    for (int i = 0; i < listObject.size(); i++) {
+                        LocalStorageAdapter db = new LocalStorageAdapter();
+                        db.checkNeighborhoodExistOnLocalDB(listObject.get(i)); //update local
+                        db.closeDB();
+                    }
+                } else {
+                    Log.d("Ibn", "Error get neighborhood: " + e.getMessage());
+                }
+            }
+        });
         return listObject;
     }
 

@@ -147,7 +147,7 @@ public class CreateNewActivity extends AppCompatActivity {
                     Log.d("Ibn",check+"");
                     Intent createNewActivity = new Intent(view.getContext(), MainActivity.class);
                     startActivity(createNewActivity);
-//                    finish();
+                    finish();
                 }
                 db.closeDB();
             }

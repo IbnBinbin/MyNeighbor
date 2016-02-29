@@ -58,9 +58,10 @@ public class ChatActivity extends AppCompatActivity {
                 chatActivity.putExtra("activity", activity);
                 chatActivity.putExtra("imgID", imgID);
 //                detailActivity.putExtra("SelectedActivity", selectedActivity);
-                startActivity(chatActivity);
                 finish();
                 overridePendingTransition(0, 0);
+                startActivity(chatActivity);
+
             }
         });
 
@@ -88,6 +89,10 @@ public class ChatActivity extends AppCompatActivity {
         adapter.notifyDataSetChanged();
         listView = (ListView) findViewById(R.id.chat_list);
         listView.setAdapter(adapter);
+//        listView.setSelection(adapter.getCount()-1);
+//        listView.smoothScrollToPosition(adapter.getCount() - 1);
+        listView.setStackFromBottom(true);
+        listView.setTranscriptMode(ListView.TRANSCRIPT_MODE_ALWAYS_SCROLL);
     }
 
     @Override
