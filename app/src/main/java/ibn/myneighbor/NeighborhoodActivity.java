@@ -47,7 +47,7 @@ public class NeighborhoodActivity extends FragmentActivity implements OnMapReady
         LocalStorageAdapter db = new LocalStorageAdapter();
         nb = new ArrayList<Neighborhood>();
         nb.addAll(db.getNeighborhood(MyApp.getUsername()));
-        Log.d("Ibn", "nb size: "+nb.size());
+//        Log.d("Ibn", "nb size: "+nb.size());
         allLatLng = new ArrayList<String[]>();
 
         db.closeDB();
@@ -57,7 +57,7 @@ public class NeighborhoodActivity extends FragmentActivity implements OnMapReady
         circle.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Log.d("Ibn", "draw circle");
+//                Log.d("Ibn", "draw circle");
                 drawOption = 0;
             }
         });
@@ -65,7 +65,7 @@ public class NeighborhoodActivity extends FragmentActivity implements OnMapReady
         point.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Log.d("Ibn", "draw point");
+//                Log.d("Ibn", "draw point");
                 drawOption = 1;
             }
         });
@@ -74,7 +74,7 @@ public class NeighborhoodActivity extends FragmentActivity implements OnMapReady
         line.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Log.d("Ibn", "draw line");
+//                Log.d("Ibn", "draw line");
                 drawOption = 2;
             }
         });
@@ -216,7 +216,7 @@ public class NeighborhoodActivity extends FragmentActivity implements OnMapReady
                         Toast.makeText(getApplicationContext(), "Please select tool on the right first", Toast.LENGTH_SHORT).show();
 
                     }
-                    Log.d("Ibn", allLatLng.size() + "");
+//                    Log.d("Ibn", allLatLng.size() + "");
                 } else {
                     Toast.makeText(getApplicationContext(), "zoom more", Toast.LENGTH_SHORT).show();
                 }

@@ -49,7 +49,7 @@ public class CustomAllChatList extends ArrayAdapter<String>{
             owner.setText(this.owner.get(position) + " said");
         }
         txtTitle.setText(itemname.get(position));
-        Log.d("Ibn", imgid.get(position)+" :imgid");
+//        Log.d("Ibn", imgid.get(position)+" :imgid");
         imageView.setImageResource(imgid.get(position));
 
         ArrayList<String> tag = new ArrayList<String>();

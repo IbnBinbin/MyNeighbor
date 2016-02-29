@@ -28,7 +28,7 @@ public class ParseStorageAdapter extends Application {
 
     public ParseStorageAdapter() {
         // Enable Local Datastore.
-        Log.d("Ibn", "in parse");
+//        Log.d("Ibn", "in parse");
         Parse.enableLocalDatastore(MyApp.getAppContext());
         Parse.initialize(MyApp.getAppContext(), "QIpqplsgqKagVuBBpUQVYLyHCXESIdZ5DOdKXLSM", "z9UeMLxOrquuG0NPf8q4yscvSkt91rW1taaWhZn1");
 
@@ -197,7 +197,7 @@ public class ParseStorageAdapter extends Application {
                         ParseObject c = objects.get(i);
                         boolean check = listObject.add(new Activity(c.getString("TITLE"), c.getString("DESCRIPTION"), c.getInt("REQUEST_OR_OFFER"), c.getString("GROUP_NAME"), c.getDate("EXPIRT_DATE"), c.getDate("CREATED_AT"), c.getString("OWNER")));
                         listObject.get(i).setID(c.getInt("ID"));
-                        Log.d("Ibn", i + " " + check + " " + listObject.size());
+//                        Log.d("Ibn", i + " " + check + " " + listObject.size());
                     }
                     for (int i = 0; i < listObject.size(); i++) {
                         LocalStorageAdapter db = new LocalStorageAdapter();
@@ -306,7 +306,7 @@ public class ParseStorageAdapter extends Application {
                         ParseObject c = objects.get(i);
                         listObject.add(new Neighborhood(c.getString("INITIAL_POINT"), c.getString("FINAL_POINT"), c.getInt("DRAW_TYPE"), c.getString("OWNER")));
                         listObject.get(i).setID(c.getInt("ID"));
-                        Log.d("Ibn",listObject.get(i).getOwner()+" "+listObject.get(i).getFinalPoint());
+//                        Log.d("Ibn",listObject.get(i).getOwner()+" "+listObject.get(i).getFinalPoint());
                     }
                     for (int i = 0; i < listObject.size(); i++) {
                         LocalStorageAdapter db = new LocalStorageAdapter();
@@ -326,7 +326,7 @@ public class ParseStorageAdapter extends Application {
         ParseQuery<ParseObject> query = new ParseQuery<ParseObject>("Group");
         try {
             List<ParseObject> objects = query.find();
-            Log.d("Ibn", objects.size()+"");
+//            Log.d("Ibn", objects.size()+"");
             for (int i = 0; i < objects.size(); i++) {
                 ParseObject c = objects.get(i);
                 listObject.add(new Group(c.getInt("ID"), c.getString("OWNER"), c.getString("GROUP_NAME"), c.getString("MEMBER")));
@@ -371,7 +371,7 @@ public class ParseStorageAdapter extends Application {
             for (int i = 0; i < objects.size(); i++) {
                 ParseObject point = ParseObject.createWithoutData(className, objects.get(i).getObjectId());
                 point.delete();
-                Log.d("Ibn", "delete: "+i);
+//                Log.d("Ibn", "delete: "+i);
 
             }
         } catch (ParseException e) {

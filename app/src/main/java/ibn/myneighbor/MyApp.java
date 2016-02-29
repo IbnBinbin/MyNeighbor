@@ -20,7 +20,7 @@ public class MyApp extends Application {
         super.onCreate();
         prefs = getSharedPreferences("ibn.myneighbor", MODE_PRIVATE);
         instance = this;
-        Log.d("Ibn", "app context: " + instance.getPackageName());
+//        Log.d("Ibn", "app context: " + instance.getPackageName());
 
         MyApp.context = getApplicationContext();
         db_cloud = new ParseStorageAdapter();
@@ -29,7 +29,7 @@ public class MyApp extends Application {
     public static void initOnBroadCastReceiver(Context context) {
         if(instance == null) {
             instance = new MyApp();
-            Log.d("Ibn", "app context init: " + instance.getPackageName());
+//            Log.d("Ibn", "app context init: " + instance.getPackageName());
 
         }
         if(prefs == null ) {

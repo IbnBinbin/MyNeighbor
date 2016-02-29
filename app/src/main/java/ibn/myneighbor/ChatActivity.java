@@ -47,7 +47,7 @@ public class ChatActivity extends AppCompatActivity {
         send.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Log.d("Ibn", "sendddd: " + textView.getText());
+//                Log.d("Ibn", "sendddd: " + textView.getText());
                 String username = MyApp.getUsername();
                 LocalStorageAdapter db = new LocalStorageAdapter();
                 db.createConversation(new Conversation(activity, username, ownerName, textView.getText().toString()), true);
@@ -82,7 +82,7 @@ public class ChatActivity extends AppCompatActivity {
             user.addAll(db.getUser(ownerList.get(i)));
         }
         for (int i = 0; i < user.size(); i++) {
-            Log.d("Ibn", "profile pic id: "+user.get(i).getProfilePic());
+//            Log.d("Ibn", "profile pic id: "+user.get(i).getProfilePic());
             profilePicList.add(user.get(i).getProfilePic());
         }
         CustomAllChatList adapter = new CustomAllChatList(this, chatMessageList, profilePicList, ownerList, offerOrReqList, false);

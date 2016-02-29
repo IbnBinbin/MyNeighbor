@@ -142,9 +142,9 @@ public class CreateNewActivity extends AppCompatActivity {
                 if(title.getText().toString().trim().length()==0){
                     Toast.makeText(getApplicationContext(), "Please put the title", Toast.LENGTH_SHORT).show();
                 }else {
-                    Log.d("Ibn", title.getText().toString()+" "+ desc.getText().toString()+" "+ num_req_offer+" "+ group+" "+ d+" "+ username);
+//                    Log.d("Ibn", title.getText().toString()+" "+ desc.getText().toString()+" "+ num_req_offer+" "+ group+" "+ d+" "+ username);
                     long check = db.createActivity(new Activity(title.getText().toString(), desc.getText().toString(), num_req_offer, group, d, null, username), true);
-                    Log.d("Ibn",check+"");
+//                    Log.d("Ibn",check+"");
                     Intent createNewActivity = new Intent(view.getContext(), MainActivity.class);
                     startActivity(createNewActivity);
                     finish();

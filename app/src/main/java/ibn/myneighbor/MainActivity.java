@@ -88,7 +88,7 @@ public class MainActivity extends AppCompatActivity
             finish();
         }
         username = MyApp.getUsername();
-        Log.d("Ibn", "Hello " + username);
+//        Log.d("Ibn", "Hello " + username);
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -132,7 +132,7 @@ public class MainActivity extends AppCompatActivity
 
     private void assignInitialData(LocalStorageAdapter db) {
         db.deleteAllData();
-        Log.d("Ibn", db.createActivity(new Activity("Feeding Dog", "dog dog dog", 0, "Gym", new Date(), null, "Egg"), true) + "__________");
+        db.createActivity(new Activity("Feeding Dog", "dog dog dog", 0, "Gym", new Date(), null, "Egg"), true);
         db.createActivity(new Activity("Babysisting", "baby baby baby", 0, "home", new Date(), null,"Ibn"), true);
         db.createActivity(new Activity("Car Pool", "carrrrr", 1, "school", new Date(), null, "Pop"), true);
         db.createActivity(new Activity("Math Tutoring", "12345", 0, "home", new Date(), null, "Touch"), true);

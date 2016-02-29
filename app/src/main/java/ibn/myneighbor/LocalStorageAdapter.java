@@ -94,7 +94,7 @@ public class LocalStorageAdapter extends SQLiteOpenHelper {
 
     public LocalStorageAdapter() {
         super(MyApp.getAppContext(), DATABASE_NAME, null, DATABASE_VERSION);
-        Log.d("Ibn", "app context: " + MyApp.getAppContext().getPackageName());
+//        Log.d("Ibn", "app context: " + MyApp.getAppContext().getPackageName());
     }
 
     @Override
@@ -236,12 +236,12 @@ public class LocalStorageAdapter extends SQLiteOpenHelper {
         int isRowExist = 1;
         if (c.moveToFirst()) {
             do {
-                Log.d("Ibn...", c.getInt(c.getColumnIndex(KEY_ID)) + " " + c.getString(c.getColumnIndex(KEY_TITLE)));
+//                Log.d("Ibn...", c.getInt(c.getColumnIndex(KEY_ID)) + " " + c.getString(c.getColumnIndex(KEY_TITLE)));
             } while (c.moveToNext());
 //            createActivity(a, false);
 //            isRowExist = 0;
         }else{
-            Log.d("Ibn...", c.getCount()+"");
+//            Log.d("Ibn...", c.getCount()+"");
             createActivity(a, false);
             isRowExist = 0;
         }
@@ -343,7 +343,7 @@ public class LocalStorageAdapter extends SQLiteOpenHelper {
                 String tmp_Cdate = c.getString(c.getColumnIndex(KEY_CREATED_AT));
                 Date d = formatter.parse(tmp_date);
                 Date dC = formatter.parse(tmp_Cdate);
-                Log.d("Ibn","activity: "+c.getString(c.getColumnIndex(KEY_TITLE)));
+//                Log.d("Ibn","activity: "+c.getString(c.getColumnIndex(KEY_TITLE)));
                 listActivity.add(new Activity(c.getString(c.getColumnIndex(KEY_TITLE)), c.getString(c.getColumnIndex(KEY_DESCRIPTION)), c.getInt(c.getColumnIndex(KEY_REQUEST_OR_OFFER)), c.getString(c.getColumnIndex(KEY_GROUP_NAME)), d, dC, c.getString(c.getColumnIndex(KEY_OWNER))));
             } while (c.moveToNext());
         }
@@ -433,35 +433,35 @@ public class LocalStorageAdapter extends SQLiteOpenHelper {
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor c = db.rawQuery(selectQuery, null);
         if (c.moveToFirst()) {
-            Log.d("Ibn", "query");
+//            Log.d("Ibn", "query");
             do {
                 if (user.equals(c.getString(c.getColumnIndex(KEY_CLIENT)))) {
-                    Log.d("Ibn", "Client "+ listAllConversation.size());
+//                    Log.d("Ibn", "Client "+ listAllConversation.size());
                     if (listAllConversation.size() > 0) {
                         for (int i = 0; i < listAllConversation.size(); i++) {
-                            Log.d("Ibn", i + ": " + c.getString(c.getColumnIndex(KEY_TOPIC))+ " "+listAllConversation.get(i).getOwner()+" "+c.getString(c.getColumnIndex(KEY_OWNER)));
+//                            Log.d("Ibn", i + ": " + c.getString(c.getColumnIndex(KEY_TOPIC))+ " "+listAllConversation.get(i).getOwner()+" "+c.getString(c.getColumnIndex(KEY_OWNER)));
                             if (listAllConversation.get(i).getOwner().equals(c.getString(c.getColumnIndex(KEY_OWNER))) && listAllConversation.get(i).getTopic().equals(c.getString(c.getColumnIndex(KEY_TOPIC)))) {
-                                Log.d("Ibn","...");
+//                                Log.d("Ibn","...");
                                 break;
                             }else if(i==listAllConversation.size()-1){
-                                Log.d("Ibn", "..." + c.getString(c.getColumnIndex(KEY_TOPIC)));
+//                                Log.d("Ibn", "..." + c.getString(c.getColumnIndex(KEY_TOPIC)));
                                 listAllConversation.add(new Conversation(c.getString(c.getColumnIndex(KEY_TOPIC)), c.getString(c.getColumnIndex(KEY_OWNER)), c.getString(c.getColumnIndex(KEY_CLIENT)), c.getString(c.getColumnIndex(KEY_CHAT_MESSAGE))));
                                 break;
                             }
                         }
                     } else {
-                        Log.d("Ibn", "" + c.getString(c.getColumnIndex(KEY_TOPIC)));
+//                        Log.d("Ibn", "" + c.getString(c.getColumnIndex(KEY_TOPIC)));
                         listAllConversation.add(new Conversation(c.getString(c.getColumnIndex(KEY_TOPIC)), c.getString(c.getColumnIndex(KEY_OWNER)), c.getString(c.getColumnIndex(KEY_CLIENT)), c.getString(c.getColumnIndex(KEY_CHAT_MESSAGE))));
                     }
                 } else {
-                    Log.d("Ibn", "Owner "+listAllConversation.size());
+//                    Log.d("Ibn", "Owner "+listAllConversation.size());
                     if (listAllConversation.size() > 0) {
                         for (int i = 0; i < listAllConversation.size(); i++) {
-                            Log.d("Ibn", i + ": " + c.getString(c.getColumnIndex(KEY_TOPIC)));
+//                            Log.d("Ibn", i + ": " + c.getString(c.getColumnIndex(KEY_TOPIC)));
                             if ((listAllConversation.get(i).getOwner().equals(c.getString(c.getColumnIndex(KEY_CLIENT))) && listAllConversation.get(i).getTopic().equals(c.getString(c.getColumnIndex(KEY_TOPIC))))) {
                                 break;
                             }else if(i==listAllConversation.size()-1){
-                                Log.d("Ibn", "..." + c.getString(c.getColumnIndex(KEY_TOPIC)));
+//                                Log.d("Ibn", "..." + c.getString(c.getColumnIndex(KEY_TOPIC)));
 
 //                                if (listAllConversation.get(i).getClient().equals(c.getString(c.getColumnIndex(KEY_OWNER))) && listAllConversation.get(i).getTopic().equals(c.getString(c.getColumnIndex(KEY_TOPIC)))) {
                                 listAllConversation.add(new Conversation(c.getString(c.getColumnIndex(KEY_TOPIC)), c.getString(c.getColumnIndex(KEY_CLIENT)), c.getString(c.getColumnIndex(KEY_OWNER)), c.getString(c.getColumnIndex(KEY_CHAT_MESSAGE))));
@@ -469,7 +469,7 @@ public class LocalStorageAdapter extends SQLiteOpenHelper {
                             }
                         }
                     } else {
-                        Log.d("Ibn", "" + c.getString(c.getColumnIndex(KEY_TOPIC)));
+//                        Log.d("Ibn", "" + c.getString(c.getColumnIndex(KEY_TOPIC)));
                         listAllConversation.add(new Conversation(c.getString(c.getColumnIndex(KEY_TOPIC)), c.getString(c.getColumnIndex(KEY_CLIENT)), c.getString(c.getColumnIndex(KEY_OWNER)), c.getString(c.getColumnIndex(KEY_CHAT_MESSAGE))));
                     }
                 }
@@ -512,7 +512,7 @@ public class LocalStorageAdapter extends SQLiteOpenHelper {
         Cursor c = db.rawQuery(selectQuery, null);
         if (c.moveToFirst()) {
             do {
-                Log.d("Ibn",c.getString(c.getColumnIndex(KEY_INITIAL_POINT))+" "+c.getColumnIndex(KEY_FINAL_POINT)+" "+c.getColumnIndex(KEY_DRAW_TYPE));
+//                Log.d("Ibn",c.getString(c.getColumnIndex(KEY_INITIAL_POINT))+" "+c.getColumnIndex(KEY_FINAL_POINT)+" "+c.getColumnIndex(KEY_DRAW_TYPE));
                 nbMarks.add(new Neighborhood(c.getString(c.getColumnIndex(KEY_INITIAL_POINT)), c.getString(c.getColumnIndex(KEY_FINAL_POINT)), Integer.parseInt(c.getString(c.getColumnIndex(KEY_DRAW_TYPE))), c.getString(c.getColumnIndex(KEY_OWNER))));
             } while (c.moveToNext());
         }
