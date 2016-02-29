@@ -37,6 +37,8 @@ public class MainActivity extends AppCompatActivity
     private ArrayList<Group> allGroups;
     private String username;
     private SharedPreferences prefs = null;
+    private Toolbar toolbar;
+    private String presentGroup="All";
 //    private ImageButton chat;
 
     @Override
@@ -44,14 +46,21 @@ public class MainActivity extends AppCompatActivity
         MyApp.initOnBroadCastReceiver(this);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        Bundle bundle=getIntent().getExtras();
+        if(bundle!=null) {
+            presentGroup = bundle.getString("presentGroup");
+        }
+        toolbar = (Toolbar) findViewById(R.id.toolbar);
+        toolbar.setTitle("My Neighbor: "+presentGroup);
         setSupportActionBar(toolbar);
+//        Log.d("Ibn", presentGroup+": grorp");
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Intent createNewActivity = new Intent(view.getContext(), CreateNewActivity.class);
+                createNewActivity.putExtra("presentGroup", presentGroup);
                 startActivity(createNewActivity);
                 finish();
             }
@@ -59,7 +68,7 @@ public class MainActivity extends AppCompatActivity
 
         prefs = MyApp.getPrefs();
 
-        updateActivityAndOwnerPic("all");
+        updateActivityAndOwnerPic(presentGroup);
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -75,6 +84,9 @@ public class MainActivity extends AppCompatActivity
 //        cloudDB.testAddNewTaskToDB();
 
         Boolean isFirstRun = getSharedPreferences("PREFERENCE", MODE_PRIVATE).getBoolean("firstRun", true);
+//        if(MyApp.getUsername().equals("NULL")){
+//            getSharedPreferences("PREFERENCE", MODE_PRIVATE).edit().putBoolean("firstRun", true).commit();
+//        }
 
         if (isFirstRun) {
 //            db = new LocalStorageAdapter();
@@ -133,33 +145,41 @@ public class MainActivity extends AppCompatActivity
     private void assignInitialData(LocalStorageAdapter db) {
         db.deleteAllData();
         db.createActivity(new Activity("Feeding Dog", "dog dog dog", 0, "Gym", new Date(), null, "Egg"), true);
-        db.createActivity(new Activity("Babysisting", "baby baby baby", 0, "home", new Date(), null,"Ibn"), true);
-        db.createActivity(new Activity("Car Pool", "carrrrr", 1, "school", new Date(), null, "Pop"), true);
-        db.createActivity(new Activity("Math Tutoring", "12345", 0, "home", new Date(), null, "Touch"), true);
-        db.createActivity(new Activity("Plants Waatering", "waterr", 0, "school", new Date(), null, "Pim"), true);
-        db.createActivity(new Activity("Ubuntu", "...", 1, "gym", new Date(), null,"Pim"),true);
-        db.createActivity(new Activity("Dating", "~~~", 0, "all", new Date(), null, "Ibn"), true);
+        db.createActivity(new Activity("Babysisting", "baby baby baby", 0, "Home", new Date(), null, "Ibn"), true);
+        db.createActivity(new Activity("Car Pool", "carrrrr", 1, "All", new Date(), null, "Pop"), true);
+        db.createActivity(new Activity("Math Tutoring", "12345", 0, "UofG", new Date(), null, "Touch"), true);
+        db.createActivity(new Activity("Plants Watering", "waterr", 0, "UofG", new Date(), null, "Pim"), true);
+        db.createActivity(new Activity("Ubuntu", "...", 1, "Lego Camp", new Date(), null, "Pim"), true);
+        db.createActivity(new Activity("Dating", "~~~", 0, "All", new Date(), null, "Ibn"), true);
 
         db.createUser(new User("Ibn", "...", R.drawable.animation, "1234"), true);
         db.createUser(new User("Pop", "...", R.drawable.dolphin, "1111"), true);
         db.createUser(new User("Egg", "...", R.drawable.bear, "1232"), true);
         db.createUser(new User("Touch", "...", R.drawable.octopus, "122"), true);
-        db.createUser(new User("Pim", "...", R.drawable.snowman, "333"),true);
+        db.createUser(new User("Pim", "...", R.drawable.snowman, "333"), true);
+        db.createUser(new User("Joe", "...", R.drawable.human1, "232"), true);
+        db.createUser(new User("Bob", "...", R.drawable.human2, "143"),true);
         db.createUser(new User("Unknown", "...", R.drawable.unknown, "333"),true);
 
-        db.createGroup(new Group(0, "Ibn", "home", "Touch, Pim"), true);
-        db.createGroup(new Group(0, "Ibn", "school", "Egg, Pim"), true);
-        db.createGroup(new Group(0, "Ibn", "Gym", "Egg"), true);
-        db.createGroup(new Group(0, "Touch", "home", "Ibn, Pim"),true);
-        db.createGroup(new Group(0, "Touch", "school", "Pop, Pim"),true);
-        db.createGroup(new Group(0, "Touch", "office", "Egg"),true);
-        db.createGroup(new Group(0, "Pim", "home", "Ibn"),true);
+        db.createGroup(new Group(0, "Ibn", "UofG", "Touch, Pim"), true);
+        db.createGroup(new Group(0, "Pim", "UofG", "Touch, Ibn"), true);
+        db.createGroup(new Group(0, "Touch", "UofG", "Ibn, Pim"), true);
+        db.createGroup(new Group(0, "Ibn", "Gym", "Egg, Pim"), true);
+        db.createGroup(new Group(0, "Egg", "Gym", "Pim, Ibn"), true);
+        db.createGroup(new Group(0, "Pim", "Gym", "Egg, Ibn"), true);
+        db.createGroup(new Group(0, "Ibn", "Home", "Pop"),true);
+        db.createGroup(new Group(0, "Pop", "Home", "Ibn"),true);
+        db.createGroup(new Group(0, "Ibn", "Lego Camp", "Bob, Joe, Pim"),true);
+        db.createGroup(new Group(0, "Bob", "Lego Camp", "Ibn, Joe, Pim"),true);
+        db.createGroup(new Group(0, "Joe", "Lego Camp", "Bob, Ibn, Pim"),true);
+        db.createGroup(new Group(0, "Pim", "Lego Camp", "Bob, Joe, Ibn"),true);
 
-        db.createConversation(new Conversation("Test", "Ibn", "Pim", "Hello"),true);
-        db.createConversation(new Conversation("Test1", "Touch", "Ibn", "Hello1"),true);
-        db.createConversation(new Conversation("Test2", "Egg", "Pop", "Hello2"),true);
-        db.createConversation(new Conversation("Test3", "Touch", "Egg", "Hello3"),true);
-        db.createConversation(new Conversation("Test4", "Pop", "Ibn", "Hello4"),true);
+
+//        db.createConversation(new Conversation("Test", "Ibn", "Pim", "Hello"),true);
+//        db.createConversation(new Conversation("Test1", "Touch", "Ibn", "Hello1"),true);
+//        db.createConversation(new Conversation("Test2", "Egg", "Pop", "Hello2"),true);
+//        db.createConversation(new Conversation("Test3", "Touch", "Egg", "Hello3"),true);
+//        db.createConversation(new Conversation("Test4", "Pop", "Ibn", "Hello4"),true);
     }
 
     public void onClickChat(View view) {
@@ -224,7 +244,7 @@ public class MainActivity extends AppCompatActivity
         } else if (id == R.id.conversions) {
             nextActivity = new Intent(MainActivity.this, AllChatActivity.class);
         } else if (id == 0) {
-            updateActivityAndOwnerPic("all");
+            updateActivityAndOwnerPic("All");
         } else {
             for (int i = 0; i < allGroups.size(); i++) {
                 if (id == allGroups.get(i).getID()) {
@@ -233,6 +253,8 @@ public class MainActivity extends AppCompatActivity
                 }
             }
         }
+
+
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
@@ -244,6 +266,9 @@ public class MainActivity extends AppCompatActivity
     }
 
     private void updateActivityAndOwnerPic(String group) {
+        presentGroup=group;
+//        Log.d("Ibn", presentGroup+": grorp");
+
         db = new LocalStorageAdapter();
         ArrayList<Activity> act = new ArrayList<Activity>();
         activityNeedList.clear();
@@ -278,6 +303,7 @@ public class MainActivity extends AppCompatActivity
         listView = (ListView) findViewById(R.id.activity_need);
         listView.setAdapter(adapter);
         db.closeDB();
+        toolbar.setTitle("My Neighbor: " + group);
 
     }
 

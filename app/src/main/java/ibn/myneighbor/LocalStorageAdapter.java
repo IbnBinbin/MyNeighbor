@@ -328,12 +328,12 @@ public class LocalStorageAdapter extends SQLiteOpenHelper {
         updateActivityFromCloud();
         ArrayList<Activity> listActivity = new ArrayList<Activity>();
         String selectQuery;
-        if (group.equals("all")) {
-            selectQuery = "SELECT * FROM " + TABLE_ACTIVITY + " ORDER BY " + KEY_CREATED_AT + " DESC";
-        } else {
+//        if (group.equals("all")) {
+//            selectQuery = "SELECT * FROM " + TABLE_ACTIVITY + " ORDER BY " + KEY_CREATED_AT + " DESC";
+//        } else {
             selectQuery = "SELECT * FROM " + TABLE_ACTIVITY + " WHERE "
                     + KEY_GROUP_NAME + " = '" + group + "' ORDER BY " + KEY_CREATED_AT + " DESC";
-        }
+//        }
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor c = db.rawQuery(selectQuery, null);
         if (c.moveToFirst()) {

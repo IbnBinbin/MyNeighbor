@@ -80,8 +80,10 @@ public class CreateNewActivity extends AppCompatActivity {
         cancel.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-//                Intent createNewActivity = new Intent(view.getContext(), MainActivity.class);
-//                startActivity(createNewActivity);
+                Bundle bundle=getIntent().getExtras();
+                Intent createNewActivity = new Intent(view.getContext(), MainActivity.class);
+                createNewActivity.putExtra("presentGroup", bundle.getString("presentGroup"));
+                startActivity(createNewActivity);
                 finish();
             }
         });
@@ -104,7 +106,7 @@ public class CreateNewActivity extends AppCompatActivity {
         List<String> list = new ArrayList<String>();
         LocalStorageAdapter db=new LocalStorageAdapter();
         ArrayList<Group> groupArrayList= db.getGroups();
-        list.add("all");
+        list.add("All");
         for(int i=0;i< groupArrayList.size();i++){
             list.add(groupArrayList.get(i).getGroupName());
         }
@@ -145,7 +147,9 @@ public class CreateNewActivity extends AppCompatActivity {
 //                    Log.d("Ibn", title.getText().toString()+" "+ desc.getText().toString()+" "+ num_req_offer+" "+ group+" "+ d+" "+ username);
                     long check = db.createActivity(new Activity(title.getText().toString(), desc.getText().toString(), num_req_offer, group, d, null, username), true);
 //                    Log.d("Ibn",check+"");
+                    Bundle bundle=getIntent().getExtras();
                     Intent createNewActivity = new Intent(view.getContext(), MainActivity.class);
+                    createNewActivity.putExtra("presentGroup", bundle.getString("presentGroup"));
                     startActivity(createNewActivity);
                     finish();
                 }

@@ -199,7 +199,7 @@ public class ParseStorageAdapter extends Application {
                         listObject.get(i).setID(c.getInt("ID"));
 //                        Log.d("Ibn", i + " " + check + " " + listObject.size());
                     }
-                    for (int i = 0; i < listObject.size(); i++) {
+                    for (int i = listObject.size()-1; i >=0; i--) {
                         LocalStorageAdapter db = new LocalStorageAdapter();
                         db.checkActivityExistOnLocalDB(listObject.get(i)); //update local
                         db.closeDB();
